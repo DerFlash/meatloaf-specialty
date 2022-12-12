@@ -12,6 +12,7 @@
 #include <memory>
 #include "U8Char.h"
 
+#define IEC_BUFFER_SIZE 1024
 /********************************************************
  * oiecbuf
  * 
@@ -30,8 +31,8 @@
 //     oiecbuf() {
 //         Debug_printv("oiecbuffer constructor");
 
-//         data = new char[1024];
-//         setp(data, data+1024);
+//         data = new char[IEC_BUFFER_SIZE];
+//         setp(data, data+IEC_BUFFER_SIZE);
 //     }
 
 //     ~oiecbuf() {
@@ -86,8 +87,8 @@ public:
     oiecstream() : std::ostream( this ) {
         Debug_printv("oiecstream constructor");
 
-        data = new char[1024];
-        setp(data, data+1024);
+        data = new char[IEC_BUFFER_SIZE];
+        setp(data, data+IEC_BUFFER_SIZE);
     };
 
     ~oiecstream() {
@@ -102,6 +103,7 @@ public:
 
     virtual void open(iecBus* iec) {
         m_iec = iec;
+        setp(data, data+IEC_BUFFER_SIZE);
         if(iec != nullptr)
             m_isOpen = true;
     }

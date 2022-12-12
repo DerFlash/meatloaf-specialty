@@ -25,11 +25,11 @@ size_t oiecstream::easyWrite(bool lastOne) {
         Debug_printv("IEC easyWrite writes THE LAST ONE with EOI:%c", *(pptr()-1));
 
         m_iec->sendEOI(*(pptr()-1));
-        setp(data, data+1024);
+        setp(data, data+IEC_BUFFER_SIZE);
     }
     else {
         // let's shift the buffer to the last character
-        setp(pptr()-1, data+1024);
+        setp(pptr()-1, data+IEC_BUFFER_SIZE);
     }
 
     return written;
