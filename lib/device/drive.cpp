@@ -939,10 +939,7 @@ uint16_t iecDrive::sendFooter(uint16_t &basicPtr)
 bool iecDrive::sendFile()
 {
 	size_t i = 0;
-	bool success = true;
-
-	uint8_t b = 0;
-	size_t bi = 0;
+	//bool success = true;
 	size_t load_address = 0;
 	size_t sys_address = 0;
 
@@ -963,13 +960,6 @@ bool iecDrive::sendFile()
 		sendFileNotFound();
 		return false;
 	}
-
-	// #newstreams
-	//size_t len = istream->size();
-	//size_t avail = istream->available();
-	// size_t len = 0;
-	// size_t avail = 0;
-	// #newstreams
 
 	// if ( istream.isText() )
 	// {
@@ -1005,81 +995,76 @@ bool iecDrive::sendFile()
 	// 	}
 	// }
 	// else
+
+	if( this->data.channel == 0 )
 	{
+		// Get/Send file load address
+		i = 2;
+		char loadAddrByte;
 
+		(*istream) >> loadAddrByte;
 
+		/*success = */IEC.send(loadAddrByte);
+		load_address = loadAddrByte & 0x00FF; // low byte
+		sys_address = loadAddrByte;
+		(*istream) >> loadAddrByte;
+		/*success = */IEC.send(loadAddrByte);
+		load_address = load_address | loadAddrByte << 8;  // high byte
+		sys_address += loadAddrByte * 256;
 
-		if( this->data.channel == 0 )
-		{
-			// Get/Send file load address
-			i = 2;
-			// #newstreams
-			//istream->read(&b, 1);
-			success = IEC.send(b);
-			load_address = b & 0x00FF; // low byte
-			sys_address = b;
-			// #newstreams
-			//istream->read(&b, 1);
-			success = IEC.send(b);
-			load_address = load_address | b << 8;  // high byte
-			sys_address += b * 256;
-
-			// Get SYSLINE
-		}
-
-		Debug_printf("sendFile: [$%.4X]\r\n=================================\r\n", load_address);
-		while( istream->peek() !=  std::char_traits<char>::eof())
-		{
-            // Read Byte
-			// #newstreams
-            //success = istream->read(&b, 1);
-			char nextChar;
-
-			(*istream) >> nextChar;
-			iecStream.write(&nextChar, 1);
-
-			// Exit if ATN is PULLED while sending
-			if ( IEC.protocol->flags bitand ATN_PULLED )
-			{
-				//Debug_printv("ATN pulled while sending. i[%d]", i);
-				if ( IEC.data.channel > 1 )
-				{
-					// #newstreams
-					//istream->seek(istream->position() - 1); OK, I have no idea why do you do that =================================
-
-					//setDeviceStatus( 74 );
-					success = true;
-				}
-
-				break;
-			}
-
-			// Toggle LED
-			if (i % 50 == 0)
-			{
-				fnLedManager.toggle(eLed::LED_BUS);
-			}
-
-			i++;
-		}
-
-		// THIS will send the EOI automagically
-		iecStream.close();
-
-		Debug_printf("\r\n=================================\r\n%d bytes sent of %d [SYS%d]\r\n", i, sys_address);
+		// Get SYSLINE
 	}
 
+	Debug_printf("sendFile: [$%.4X]\r\n=================================\r\n", load_address);
+	while( istream->peek() !=  std::char_traits<char>::eof())
+	{
+		char nextChar;
 
+		(*istream) >> nextChar;
+		iecStream.write(&nextChar, 1);
+
+		// Exit if ATN is PULLED while sending
+		if ( IEC.protocol->flags bitand ATN_PULLED )
+		{
+			//Debug_printv("ATN pulled while sending. i[%d]", i);
+			if ( IEC.data.channel > 1 )
+			{
+				// ?????????????????????????????????????????????????????????????????????????
+				//istream->seek(istream->position() - 1); OK, I have no idea why do you do that =================================
+				// ?????????????????????????????????????????????????????????????????????????
+
+				//setDeviceStatus( 74 );
+				//success = true;
+			}
+
+			break;
+		}
+
+		// Toggle LED
+		if (i % 50 == 0)
+		{
+			fnLedManager.toggle(eLed::LED_BUS);
+		}
+
+		i++;
+	}
+
+	// THIS will send all remaining buffer data and EOI before last byte automagically!
+	iecStream.close();
+
+	Debug_printf("\r\n=================================\r\n%d bytes sent of %d [SYS%d]\r\n", i, sys_address);
+	
 	fnLedManager.set(eLed::LED_BUS, true);
 
-	if (!success)
-	{
-		Debug_println("sendFile: Transfer aborted!");
-		// TODO: Send something to signal that there was an error to the C64
-	 	// IEC.sendEOI(0);
-	}
+	// if (!success)
+	// {
+	// 	Debug_println("sendFile: Transfer aborted!");
+	// 	// TODO: Send something to signal that there was an error to the C64
+	//  	// IEC.sendEOI(0);
+	// }
 
-	return success;
+	//return success;
+	return true;
 } // sendFile
 
 
