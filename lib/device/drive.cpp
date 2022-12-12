@@ -95,11 +95,7 @@ device_state_t iecDrive::process ( void )
         // Open Named Channel
         if(isOpen) 
 		{
-            currentStream = retrieveStream();
-			if( currentStream ) 
-			{
-				device_config.save();
-			}
+			device_config.save();
         }
     }
     else if ( this->data.secondary == IEC_REOPEN )
@@ -945,10 +941,12 @@ bool iecDrive::sendFile()
 	size_t i = 0;
 	bool success = true;
 
-	uint8_t b;
+	uint8_t b = 0;
 	size_t bi = 0;
 	size_t load_address = 0;
 	size_t sys_address = 0;
+
+	iecStream.open(&IEC);
 
 #ifdef DATA_STREAM
 	char ba[9];
@@ -958,8 +956,6 @@ bool iecDrive::sendFile()
 	// Update device database
 	device_config.save();
 
-	// TODO!!!! you should check istream for nullptr here and return error immediately if null
-	// std::shared_ptr<MStream> istream = std::static_pointer_cast<MStream>(currentStream);
 	auto istream = retrieveStream();
 	if ( istream == nullptr )
 	{
@@ -968,8 +964,12 @@ bool iecDrive::sendFile()
 		return false;
 	}
 
-	size_t len = istream->size();
-	size_t avail = istream->available();
+	// #newstreams
+	//size_t len = istream->size();
+	//size_t avail = istream->available();
+	// size_t len = 0;
+	// size_t avail = 0;
+	// #newstreams
 
 	// if ( istream.isText() )
 	// {
@@ -1013,11 +1013,13 @@ bool iecDrive::sendFile()
 		{
 			// Get/Send file load address
 			i = 2;
-			istream->read(&b, 1);
+			// #newstreams
+			//istream->read(&b, 1);
 			success = IEC.send(b);
 			load_address = b & 0x00FF; // low byte
 			sys_address = b;
-			istream->read(&b, 1);
+			// #newstreams
+			//istream->read(&b, 1);
 			success = IEC.send(b);
 			load_address = load_address | b << 8;  // high byte
 			sys_address += b * 256;
@@ -1026,58 +1028,15 @@ bool iecDrive::sendFile()
 		}
 
 		Debug_printf("sendFile: [$%.4X]\r\n=================================\r\n", load_address);
-		while( avail && success )
+		while( istream->peek() !=  std::char_traits<char>::eof())
 		{
             // Read Byte
-            success = istream->read(&b, 1);
-            if ( !success )
-            {
-                IEC.sendEOI(0);
-            }
+			// #newstreams
+            //success = istream->read(&b, 1);
+			char nextChar;
 
-			// Debug_printv("b[%02X] success[%d]", b, success);
-			if (success)
-			{
-#ifdef DATA_STREAM
-				if (bi == 0)
-				{
-					Debug_printf(":%.4X ", load_address);
-					load_address += 8;
-				}
-#endif
-				// Send Byte
-				if ( avail == 1 )
-				{
-					success = IEC.sendEOI(b); // indicate end of file.
-					if ( !success )
-						Debug_printv("fail");
-					//Debug_printf("eoi sent, i[%d] len[%d] success[%d]", i, len, success );
-				}
-				else
-				{
-					success = IEC.send(b);
-					if ( !success )
-						Debug_printv("fail");
-				}
-
-#ifdef DATA_STREAM
-				// Show ASCII Data
-				if (b < 32 || b >= 127)
-				b = 46;
-
-				ba[bi++] = b;
-
-				if(bi == 8)
-				{
-					size_t t = (i * 100) / len;
-					Debug_printf(" %s (%d %d%%) [%d]\r\n", ba, i, t, avail - 1);
-					bi = 0;
-				}
-#else
-				size_t t = (i * 100) / len;
-				Debug_printf("\rTransferring %d%% [%d, %d]", t, i, avail -1);
-#endif
-			}
+			(*istream) >> nextChar;
+			iecStream.write(&nextChar, 1);
 
 			// Exit if ATN is PULLED while sending
 			if ( IEC.protocol->flags bitand ATN_PULLED )
@@ -1085,16 +1044,12 @@ bool iecDrive::sendFile()
 				//Debug_printv("ATN pulled while sending. i[%d]", i);
 				if ( IEC.data.channel > 1 )
 				{
-					// Save file pointer position
-					// streamUpdate( istream );
-					istream->seek(istream->position() - 1);
+					// #newstreams
+					//istream->seek(istream->position() - 1); OK, I have no idea why do you do that =================================
+
 					//setDeviceStatus( 74 );
 					success = true;
 				}
-				// else
-				// {
-				// 	closeStream();
-				// }
 
 				break;
 			}
@@ -1105,18 +1060,13 @@ bool iecDrive::sendFile()
 				fnLedManager.toggle(eLed::LED_BUS);
 			}
 
-			avail = istream->available();
-			// We got another chunk, update length
-			// if ( avail > (len - i) )
-			// {
-			// 	len += (avail - (len - i));
-			// }
-
 			i++;
 		}
-		Debug_printf("\r\n=================================\r\n%d bytes sent of %d [SYS%d]\r\n", i, avail, sys_address);
 
-		//Debug_printv("len[%d] avail[%d] success[%d]", len, avail, success);		
+		// THIS will send the EOI automagically
+		iecStream.close();
+
+		Debug_printf("\r\n=================================\r\n%d bytes sent of %d [SYS%d]\r\n", i, sys_address);
 	}
 
 
@@ -1161,22 +1111,11 @@ bool iecDrive::saveFile()
     else
 	{
 	 	// Stream is open!  Let's save this!
-
-		// wait - what??? If stream position == x you don't have to seek(x)!!!
-		// if ( ostream->position() > 0 )
-		// {
-		// 	// // Position file pointer
-		// 	// ostream->seek(currentStream.cursor);
-		// }
-		// else
-		{
-			// Get file load address
-			ll[0] = IEC.receive();
-			load_address = *ll & 0x00FF; // low byte
-			lh[0] = IEC.receive();
-			load_address = load_address | *lh << 8;  // high byte
-		}
-
+		// Get file load address
+		ll[0] = IEC.receive();
+		load_address = *ll & 0x00FF; // low byte
+		lh[0] = IEC.receive();
+		load_address = load_address | *lh << 8;  // high byte
 
 		Debug_printv("saveFile: [$%.4X]\r\n=================================\r\n", load_address);
 
@@ -1187,8 +1126,10 @@ bool iecDrive::saveFile()
 			if (i == 0)
 			{
 				Debug_print("[");
-				ostream->write(ll, b_len);
-				ostream->write(lh, b_len);
+			// #newstreams
+				//ostream->write(ll, b_len);
+				//ostream->write(lh, b_len);
+			// #newstreams
 				i += 2;
 				Debug_println("]");
 			}
@@ -1205,7 +1146,8 @@ bool iecDrive::saveFile()
 			// if(ostream->isText())
 			// 	ostream->putPetsciiAsUtf8(b[0]);
 			// else
-				ostream->write(b, b_len);
+			// #newstreams
+				//ostream->write(b, b_len);
 			i++;
 
 			uint16_t f = IEC.protocol->flags;

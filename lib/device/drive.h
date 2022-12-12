@@ -25,7 +25,7 @@
 #include "../../include/debug.h"
 #include "../../include/cbmdefines.h"
 #include "../../include/petscii.h"
-
+#include "../filesystem/wrappers/iec_buffer.h"
 #include "iec.h"
 //#include "drive/cbmdos.h"
 
@@ -70,7 +70,7 @@ protected:
 	void handleTalk(uint8_t chan) override;
 
 private:
-
+	oiecstream iecStream;
 	// Directory Navigation & Listing
 	bool m_show_extension = true;
 	bool m_show_hidden = false;

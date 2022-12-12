@@ -15,15 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Meatloaf. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef MEATLOAF_BUS_IEC
-#define MEATLOAF_BUS_IEC
+#ifndef MEATLIB_BUS_IEC
+#define MEATLIB_BUS_IEC
 
 #include <iostream>
 #include <forward_list>
 #include <unordered_map>
 
-#include "meat_io.h"
-#include "meat_stream.h"
+#include "meat_buffer.h"
+//#include "meat_stream.h"
 
 #include "protocol/cbmstandardserial.h"
 #include "protocol/jiffydos.h"
@@ -87,7 +87,7 @@ class iecDevice
     public:
         // Return values for service:
 
-        std::unordered_map<uint16_t, std::shared_ptr<MStream>> streams;
+        std::unordered_map<uint16_t, Meat::iostream*> streams;
 
         iecDevice();
         ~iecDevice() {};
@@ -112,9 +112,8 @@ class iecDevice
         virtual void handleTalk ( uint8_t chan ) = 0;
 
         // Named Channel functions
-        std::shared_ptr<MStream> currentStream;
-        bool registerStream (int mode);
-        std::shared_ptr<MStream> retrieveStream ( void );
+        bool registerStream (std::ios_base::openmode mode);
+        Meat::iostream* retrieveStream ( void );
         bool closeStream ( bool close_all = false );
 
         // This is set after an open command and determines what to send next
@@ -277,4 +276,4 @@ class iecBus
 
 extern iecBus IEC;
 
-#endif // MEATLOAF_BUS_IEC
+#endif /* MEATLIB_BUS_IEC */
