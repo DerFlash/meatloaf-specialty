@@ -133,6 +133,13 @@ void iecDevice::storeLastByte(char last)
     streamLastByte.insert ( newPair );
 }
 
+void iecDevice::flushLastByte()
+{
+    uint16_t key = ( this->data.device * 100 ) + this->data.channel; 
+    auto newPair = std::make_pair ( key, (uint16_t)999 );
+    streamLastByte.insert ( newPair );
+}
+
 
 Meat::iostream* iecDevice::retrieveStream ( void )
 {

@@ -940,8 +940,8 @@ bool iecDrive::sendFile()
 {
 	size_t i = 0;
 	//bool success = true;
-	size_t load_address = 0;
-	size_t sys_address = 0;
+	// size_t load_address = 0;
+	// size_t sys_address = 0;
 
 	iecStream.open(&IEC);
 
@@ -996,35 +996,36 @@ bool iecDrive::sendFile()
 	// }
 	// else
 
-	if( this->data.channel == 0 )
-	{
-		// Get/Send file load address
-		i = 2;
-		char loadAddrByte;
+	// if( this->data.channel == 0 )
+	// {
+	// 	// Get/Send file load address
+	// 	i = 2;
+	// 	char loadAddrByte;
 
-		(*istream) >> loadAddrByte;
+	// 	(*istream) >> loadAddrByte;
 
-		/*success = */IEC.send(loadAddrByte);
-		load_address = loadAddrByte & 0x00FF; // low byte
-		sys_address = loadAddrByte;
-		(*istream) >> loadAddrByte;
-		/*success = */IEC.send(loadAddrByte);
-		load_address = load_address | loadAddrByte << 8;  // high byte
-		sys_address += loadAddrByte * 256;
+	// 	/*success = */IEC.send(loadAddrByte);
+	// 	load_address = loadAddrByte & 0x00FF; // low byte
+	// 	sys_address = loadAddrByte;
+	// 	(*istream) >> loadAddrByte;
+	// 	/*success = */IEC.send(loadAddrByte);
+	// 	load_address = load_address | loadAddrByte << 8;  // high byte
+	// 	sys_address += loadAddrByte * 256;
 
-		// Get SYSLINE
-	}
+	// 	// Get SYSLINE
+	// }
 
 	// first - let's write the byte that wasn't written before
 	// ok - but if we are indeed resumed then the above code for load_addres and sys_addres
 	// doesn't make any sense!
-	uint16_t lastByte = retrieveLastByte();
+	uint16_t lastByte = retrieveLastByte(); // and the byte gets flushed!
 	if(lastByte != 999) {
 		char nextChar = (char) lastByte;
 		iecStream.write(&nextChar, 1);
+		flushLastByte();
 	}
 
-	Debug_printf("sendFile: [$%.4X]\r\n=================================\r\n", load_address);
+	// Debug_printf("sendFile: [$%.4X]\r\n=================================\r\n", load_address);
 	while( istream->peek() !=  std::char_traits<char>::eof())
 	{
 		char nextChar;
@@ -1060,7 +1061,7 @@ bool iecDrive::sendFile()
 	// THIS will send all remaining buffer data and EOI before last byte automagically!
 	iecStream.close();
 
-	Debug_printf("\r\n=================================\r\n%d bytes sent of %d [SYS%d]\r\n", i, sys_address);
+	// Debug_printf("\r\n=================================\r\n%d bytes sent of %d [SYS%d]\r\n", i, sys_address);
 	
 	fnLedManager.set(eLed::LED_BUS, true);
 

@@ -117,6 +117,7 @@ class iecDevice
         Meat::iostream* retrieveStream ( void );
         bool unregisterStream ( bool close_all = false );
         uint16_t retrieveLastByte ( void );
+        void flushLastByte();
         void storeLastByte(char);
         // This is set after an open command and determines what to send next
         uint8_t m_openState;
