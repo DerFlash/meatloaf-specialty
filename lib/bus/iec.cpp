@@ -116,7 +116,7 @@ uint16_t iecDevice::retrieveLastByte ( void )
 {
     size_t key = ( this->data.device * 100 ) + this->data.channel; 
 
-    if ( streams.find ( key ) != streams.end() )
+    if ( streamLastByte.find ( key ) != streamLastByte.end() )
     {
         return streamLastByte.at ( key );
     }
