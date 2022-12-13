@@ -982,20 +982,6 @@ bool iecDrive::sendFile()
 	// 		}
 	// 	}
 
-	// 	while(!istream.eof()) {
-	// 		auto cp = istream.getUtf8();
-
-	// 		ostream.putUtf8(&cp);
-
-	// 		if(ostream.bad() || istream.bad()) {
-	// 			Debug_printv("Error sending");
-    //             setDeviceStatus(60); // write error
-	// 			break;
-    //         }
-	// 	}
-	// }
-	// else
-
 	// if( this->data.channel == 0 )
 	// {
 	// 	// Get/Send file load address
@@ -1026,12 +1012,11 @@ bool iecDrive::sendFile()
 	}
 
 	// Debug_printf("sendFile: [$%.4X]\r\n=================================\r\n", load_address);
-	while( istream->peek() !=  std::char_traits<char>::eof())
+	while( istream->peek() != std::char_traits<char>::eof() && !istream->bad() && !iecStream.bad())
 	{
 		char nextChar;
 
 		(*istream) >> nextChar;
-		storeLastByte(nextChar);
 		iecStream.write(&nextChar, 1);
 
 		// Exit if ATN is PULLED while sending
