@@ -11,7 +11,8 @@ size_t oiecstream::easyWrite(bool lastOne) {
 
     // we're always writing without the last character in buffer just to be able to send this special delay
     // if this is last character in the file
-    Debug_printv("IEC easyWrite writes:");
+    auto count = pptr()-pbase();
+    Debug_printv("IEC easyWrite will try to send %d bytes over IEC (but buffer contains %d)", count-1, count);
 
     for(auto b = pbase(); b<pptr()-1; b++) {
         Serial.printf("%c",*b);
@@ -30,6 +31,7 @@ size_t oiecstream::easyWrite(bool lastOne) {
     else {
         // let's shift the buffer to the last character
         setp(pptr()-1, data+IEC_BUFFER_SIZE);
+        Debug_printv("IEC easyWrite writes leaving one char behind");
     }
 
     return written;
@@ -54,11 +56,12 @@ int oiecstream::overflow(int ch) {
 };
 
 int oiecstream::sync() { 
-    Debug_printv("sync for iec called");
     if(pptr() == pbase()) {
+        Debug_printv("sync for iec called - no more data");
         return 0;
     }
     else {
+        Debug_printv("sync for iec called - will write last remaining char if available");
         auto result = easyWrite(true); 
         return (result != 0) ? 0 : -1;  
     }  
