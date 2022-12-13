@@ -51,10 +51,15 @@ namespace Meat
             close();
         }
 
-        std::filebuf *doOpen()
+        std::filebuf *doOpen(std::ios_base::open_mode mode)
         {
             // Debug_println("In filebuf open pre reset mistream");
-            mstream.reset(mfile->meatStream());
+            if(mode == std::ios_base::in)
+                mstream.reset(mfile->meatStream());
+            else {
+                //TODO - ok we have to obtain the out stream here SOMEHOW
+            }
+
             // Debug_println("In filebuf open post reset mistream");
             if (mstream->isOpen())
             {
@@ -66,18 +71,18 @@ namespace Meat
                 return nullptr;
         }
 
-        std::filebuf *open(const char* filename)
+        std::filebuf *open(const char* filename, std::ios_base::open_mode mode)
         {
             // Debug_println("In filebuf open");
             mfile.reset(MFSOwner::File(filename));
-            return doOpen();
+            return doOpen(mode);
         };
 
-        std::filebuf *open(const std::string filename)
+        std::filebuf *open(const std::string filename, std::ios_base::open_mode mode)
         {
             // Debug_println("In filebuf open");
             mfile.reset(MFSOwner::File(filename));
-            return doOpen();
+            return doOpen(mode);
         };
 
         virtual bool close()
@@ -257,7 +262,7 @@ namespace Meat
             return ch;
         };
 
-        std::streampos seekposforce(std::streampos __pos, std::ios_base::openmode __mode = std::ios_base::in | std::ios_base::out)
+        std::streampos seekposforce(std::streampos __pos, std::ios_base::openmode __mode = std::ios_base::in)
         {
             std::streampos __ret = std::streampos(off_type(-1));
 
@@ -271,7 +276,7 @@ namespace Meat
             return __ret;
         }
 
-        std::streampos seekpos(std::streampos __pos, std::ios_base::openmode __mode = std::ios_base::in | std::ios_base::out) override
+        std::streampos seekpos(std::streampos __pos, std::ios_base::openmode __mode = std::ios_base::in) override
         {
             std::streampos __ret = std::streampos(off_type(-1));
 
@@ -425,7 +430,7 @@ namespace Meat
          *  @param  __mode  Open file in specified mode (see std::ios_base).
          */
         explicit basic_fstream(const char *__s,
-                               std::ios_base::openmode __mode = std::ios_base::in | std::ios_base::out)
+                               std::ios_base::openmode __mode = std::ios_base::in)
             : __iostream_type(0), _M_filebuf()
         {
             this->init(&_M_filebuf);
@@ -433,7 +438,7 @@ namespace Meat
         }
 
         explicit basic_fstream(MFile* fi,
-                               std::ios_base::openmode __mode = std::ios_base::in | std::ios_base::out)
+                               std::ios_base::openmode __mode = std::ios_base::in)
             : __iostream_type(0), _M_filebuf()
         {
             this->init(&_M_filebuf);
@@ -447,7 +452,7 @@ namespace Meat
          *  @param  __s  Null terminated string specifying the filename.
          *  @param  __mode  Open file in specified mode (see std::ios_base).
          */
-        explicit basic_fstream(const std::string &__s, std::ios_base::openmode __mode = std::ios_base::in | std::ios_base::out) : __iostream_type(0), _M_filebuf()
+        explicit basic_fstream(const std::string &__s, std::ios_base::openmode __mode = std::ios_base::in) : __iostream_type(0), _M_filebuf()
         {
             this->init(&_M_filebuf);
             this->open(__s, __mode);
@@ -542,9 +547,9 @@ namespace Meat
          *  Calls @c std::basic_filebuf::open(__s,__mode).  If that
          *  function fails, @c failbit is set in the stream's error state.
          */
-        void open(const char *__s, std::ios_base::openmode __mode = std::ios_base::in | std::ios_base::out)
+        void open(const char *__s, std::ios_base::openmode __mode = std::ios_base::in)
         {
-            if (!_M_filebuf.open(__s/*, __mode*/))
+            if (!_M_filebuf.open(__s, __mode))
                 this->setstate(std::ios_base::failbit);
             else
                 // _GLIBCXX_RESOLVE_LIB_DEFECTS
@@ -561,9 +566,9 @@ namespace Meat
          *  Calls @c std::basic_filebuf::open(__s,__mode).  If that
          *  function fails, @c failbit is set in the stream's error state.
          */
-        void open(const std::string &__s, std::ios_base::openmode __mode = std::ios_base::in | std::ios_base::out)
+        void open(const std::string &__s, std::ios_base::openmode __mode = std::ios_base::in)
         {
-            if (!_M_filebuf.open(__s/*, __mode*/))
+            if (!_M_filebuf.open(__s, __mode))
                 this->setstate(std::ios_base::failbit);
             else
                 // _GLIBCXX_RESOLVE_LIB_DEFECTS
