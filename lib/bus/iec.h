@@ -88,6 +88,7 @@ class iecDevice
         // Return values for service:
 
         std::unordered_map<uint16_t, Meat::iostream*> streams;
+        std::unordered_map<uint16_t, uint16_t> streamLastByte;
 
         iecDevice();
         ~iecDevice() {};
@@ -114,8 +115,9 @@ class iecDevice
         // Named Channel functions
         bool registerStream (std::ios_base::openmode mode);
         Meat::iostream* retrieveStream ( void );
-        bool closeStream ( bool close_all = false );
-
+        bool unregisterStream ( bool close_all = false );
+        uint16_t retrieveLastByte ( void );
+        void storeLastByte(char);
         // This is set after an open command and determines what to send next
         uint8_t m_openState;
 

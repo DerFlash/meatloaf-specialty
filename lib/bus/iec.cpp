@@ -112,6 +112,27 @@ device_state_t iecDevice::queue_command ( void )
     return device_state;
 }
 
+uint16_t iecDevice::retrieveLastByte ( void )
+{
+    size_t key = ( this->data.device * 100 ) + this->data.channel; 
+
+    if ( streams.find ( key ) != streams.end() )
+    {
+        return streamLastByte.at ( key );
+    }
+    else
+    {
+        return 999;
+    }
+}
+
+void iecDevice::storeLastByte(char last)
+{
+    uint16_t key = ( this->data.device * 100 ) + this->data.channel; 
+    auto newPair = std::make_pair ( key, (uint16_t)last );
+    streamLastByte.insert ( newPair );
+}
+
 
 Meat::iostream* iecDevice::retrieveStream ( void )
 {
@@ -162,7 +183,7 @@ bool iecDevice::registerStream (std::ios_base::openmode mode)
     return true;
 }
 
-bool iecDevice::closeStream ( bool close_all )
+bool iecDevice::unregisterStream ( bool close_all )
 {
     size_t key = ( this->data.device * 100 ) + this->data.channel;
     auto found = streams.find(key);

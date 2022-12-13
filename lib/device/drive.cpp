@@ -124,7 +124,7 @@ device_state_t iecDrive::process ( void )
             handleTalk ( this->data.channel );
             if ( this->data.channel < 2 )
 			{
-				closeStream();
+				unregisterStream();
 				device_state = DEVICE_IDLE;
 				this->data.init(); // Clear device command
             }
@@ -135,7 +135,7 @@ device_state_t iecDrive::process ( void )
     {
         Debug_printf ( "CLOSE CHANNEL %d\r\n", this->data.channel );
 
-        closeStream();
+        unregisterStream();
         this->device_state = DEVICE_IDLE;
         this->data.init(); // Clear device command        
     }
@@ -1015,12 +1015,22 @@ bool iecDrive::sendFile()
 		// Get SYSLINE
 	}
 
+	// first - let's write the byte that wasn't written before
+	// ok - but if we are indeed resumed then the above code for load_addres and sys_addres
+	// doesn't make any sense!
+	uint16_t lastByte = retrieveLastByte();
+	if(lastByte != 999) {
+		char nextChar = (char) lastByte;
+		iecStream.write(&nextChar, 1);
+	}
+
 	Debug_printf("sendFile: [$%.4X]\r\n=================================\r\n", load_address);
 	while( istream->peek() !=  std::char_traits<char>::eof())
 	{
 		char nextChar;
 
 		(*istream) >> nextChar;
+		storeLastByte(nextChar);
 		iecStream.write(&nextChar, 1);
 
 		// Exit if ATN is PULLED while sending
@@ -1029,12 +1039,10 @@ bool iecDrive::sendFile()
 			//Debug_printv("ATN pulled while sending. i[%d]", i);
 			if ( IEC.data.channel > 1 )
 			{
-				// ?????????????????????????????????????????????????????????????????????????
-				//istream->seek(istream->position() - 1); OK, I have no idea why do you do that =================================
-				// ?????????????????????????????????????????????????????????????????????????
-
+				storeLastByte(nextChar);
 				//setDeviceStatus( 74 );
 				//success = true;
+
 			}
 
 			break;
