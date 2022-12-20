@@ -581,7 +581,7 @@ void iecDrive::handleListenCommand( void )
 
 	}
 
-	dumpState();
+	//dumpState();
 } // handleListenCommand
 
 
@@ -631,7 +631,7 @@ void iecDrive::handleTalk(uint8_t chan)
 	m_openState = O_NOTHING;
 	m_filename = m_mfile->url;
 
-	dumpState();
+	//dumpState();
 } // handleTalk
 
 
@@ -1004,21 +1004,22 @@ bool iecDrive::sendFile()
 	// first - let's write the byte that wasn't written before
 	// ok - but if we are indeed resumed then the above code for load_addres and sys_addres
 	// doesn't make any sense!
-	uint16_t lastByte = retrieveLastByte(); // and the byte gets flushed!
-	if(lastByte != 999) {
-		char nextChar = (char) lastByte;
-		iecStream.write(&nextChar, 1);
-		flushLastByte();
-	}
+	// uint16_t lastByte = retrieveLastByte(); // and the byte gets flushed!
+	// if(lastByte != 999) {
+	// 	char nextChar = (char) lastByte;
+	// 	iecStream.write(&nextChar, 1);
+	// 	flushLastByte();
+	// }
 
 	// Debug_printf("sendFile: [$%.4X]\r\n=================================\r\n", load_address);
-	Debug_printv("peek[%d] istream[%d] iecstream[%d]", istream->peek(), istream->bad(), iecStream.bad());
+	Debug_printv("peek[%d] istream[%d] iecstream[%d] lastbyte[%d[", istream->peek(), istream->bad(), iecStream.bad());
 	while( istream->peek() != std::char_traits<int>::eof() && istream->bad() == 0 && iecStream.bad() == 0 )
 	{
 		char nextChar;
 
 		(*istream) >> nextChar;
-		iecStream.write(&nextChar, 1);
+		//iecStream.write(&nextChar, 1);
+		IEC.send(nextChar);
 
 		// // Exit if ATN is PULLED while sending
 		// if ( IEC.protocol->flags bitand ATN_PULLED )
@@ -1041,10 +1042,15 @@ bool iecDrive::sendFile()
 			fnLedManager.toggle(eLed::LED_BUS);
 		}
 
+		if ( i % 8 == 0)
+			Debug_println("");
+
+		Debug_printf("%.2X ", nextChar);
+
 		i++;
 	}
 	Debug_printv("peek[%d] istream[%d] iecstream[%d]", istream->peek(), istream->bad(), iecStream.bad());
-	Debug_printv("finished sending data");
+	Debug_printv("finished sending data [%d]", i);
 
 	// THIS will send all remaining buffer data and EOI before last byte automagically!
 	iecStream.close();

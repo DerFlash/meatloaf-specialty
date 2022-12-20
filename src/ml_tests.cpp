@@ -470,6 +470,39 @@ void testJson(MFile* srcFile, MFile* dstFile) {
 
 }
 
+void hexDump(MFile* srcFile) {
+    testHeader("HEX DUMP");
+
+    Debug_printf(" * for %s\n", srcFile->url.c_str());
+
+    Meat::iostream istream(srcFile);
+
+    Debug_printv("dump start");
+    if(istream.is_open()) {
+        if(istream.eof()) {
+            Debug_printf("Reader returned EOF! :(");
+        }
+
+        char nextChar;
+
+        int i = 0;
+        while(!istream.eof()) {
+            istream >> nextChar;
+
+            if ( i % 8 == 0)
+                Serial.println("");
+
+            Serial.printf("%.2H ", nextChar);
+        }
+
+        istream.close();
+    }
+    else {
+        Debug_printf(" * Read test - ERROR:%s could not be read!\n", srcFile->url.c_str());
+    }
+    Debug_printv("dump complete!")
+
+}
 
 void testReader(MFile* srcFile) {
     testHeader("TEST reading using C++ API");
@@ -649,7 +682,7 @@ void runTestsSuite() {
     fnSystem.delay_microseconds(pdMS_TO_TICKS(5000)); // 5sec after connect
 
     //commodoreServer();
-    seekTest();
+    //seekTest();
 
     // ====== Per FS dir, read and write region =======================================
 
@@ -696,9 +729,9 @@ void runTestsSuite() {
 
     // Debug_printv("SD Card File System");
     //std::string basepath = fnSDFAT.basepath();
-    //basepath += std::string("/");
-    //Debug_printv("basepath[%s]", basepath.c_str());
-    //testDirectory(MFSOwner::File( basepath ), true);
+    std::string basepath = "/";
+    Debug_printv("basepath[%s]", basepath.c_str());
+    testDirectory(MFSOwner::File( basepath ), true);
     //testDirectoryStandard( "/sd/" );
     // testDirectory(MFSOwner::File("/sd/"), true);
 
@@ -718,6 +751,7 @@ void runTestsSuite() {
 
     //testRedirect();
     //testStrings();
+    hexDump(MFSOwner::File("/fb64"));
 
     Debug_println("*** All tests finished ***");
 }
