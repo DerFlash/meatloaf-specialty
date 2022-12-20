@@ -1012,27 +1012,28 @@ bool iecDrive::sendFile()
 	}
 
 	// Debug_printf("sendFile: [$%.4X]\r\n=================================\r\n", load_address);
-	while( istream->peek() != std::char_traits<char>::eof() && !istream->bad() && !iecStream.bad())
+	Debug_printf("peek[%d] istream[%d] iecstream[%d]", istream->peek(), istream->bad(), iecStream.bad());
+	while( istream->peek() != std::char_traits<int>::eof() && istream->bad() == 0 && iecStream.bad() == 0 )
 	{
 		char nextChar;
 
 		(*istream) >> nextChar;
 		iecStream.write(&nextChar, 1);
 
-		// Exit if ATN is PULLED while sending
-		if ( IEC.protocol->flags bitand ATN_PULLED )
-		{
-			//Debug_printv("ATN pulled while sending. i[%d]", i);
-			if ( IEC.data.channel > 1 )
-			{
-				storeLastByte(nextChar);
-				//setDeviceStatus( 74 );
-				//success = true;
+		// // Exit if ATN is PULLED while sending
+		// if ( IEC.protocol->flags bitand ATN_PULLED )
+		// {
+		// 	Debug_printv("ATN pulled while sending. i[%d]", i);
+		// 	if ( IEC.data.channel > 1 )
+		// 	{
+		// 		storeLastByte(nextChar);
+		// 		//setDeviceStatus( 74 );
+		// 		//success = true;
 
-			}
+		// 	}
 
-			break;
-		}
+		// 	return false;
+		// }
 
 		// Toggle LED
 		if (i % 50 == 0)
@@ -1042,6 +1043,7 @@ bool iecDrive::sendFile()
 
 		i++;
 	}
+	Debug_printv("finished sending data");
 
 	// THIS will send all remaining buffer data and EOI before last byte automagically!
 	iecStream.close();

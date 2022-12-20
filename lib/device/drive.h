@@ -71,6 +71,7 @@ protected:
 
 private:
 	oiecstream iecStream;
+	
 	// Directory Navigation & Listing
 	bool m_show_extension = true;
 	bool m_show_hidden = false;
