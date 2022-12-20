@@ -1012,7 +1012,7 @@ bool iecDrive::sendFile()
 	}
 
 	// Debug_printf("sendFile: [$%.4X]\r\n=================================\r\n", load_address);
-	Debug_printf("peek[%d] istream[%d] iecstream[%d]", istream->peek(), istream->bad(), iecStream.bad());
+	Debug_printv("peek[%d] istream[%d] iecstream[%d]", istream->peek(), istream->bad(), iecStream.bad());
 	while( istream->peek() != std::char_traits<int>::eof() && istream->bad() == 0 && iecStream.bad() == 0 )
 	{
 		char nextChar;
@@ -1043,6 +1043,7 @@ bool iecDrive::sendFile()
 
 		i++;
 	}
+	Debug_printv("peek[%d] istream[%d] iecstream[%d]", istream->peek(), istream->bad(), iecStream.bad());
 	Debug_printv("finished sending data");
 
 	// THIS will send all remaining buffer data and EOI before last byte automagically!
