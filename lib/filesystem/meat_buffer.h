@@ -99,6 +99,8 @@ namespace Meat
 
         bool is_open() const
         {
+            Debug_printv("is_open");
+
             if (mstream == nullptr)
                 return false;
             else
@@ -529,6 +531,7 @@ namespace Meat
          */
         bool is_open()
         {
+            Debug_printv("is_open");
             return _M_filebuf.is_open();
         }
 
@@ -536,6 +539,7 @@ namespace Meat
         // 365. Lack of const-qualification in clause 27
         bool is_open() const
         {
+            Debug_printv("is_open const");
             return _M_filebuf.is_open();
         }
 

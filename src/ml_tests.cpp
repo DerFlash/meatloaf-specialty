@@ -287,20 +287,20 @@ void seekTest()
 
     // 1. we cen obtain raw C++ buffer from our stream:
 
-    auto pbuf = stream.rdbuf();
+    // auto pbuf = stream.rdbuf();
 
 
-    Debug_printv("Calling seekposforce");
+    // Debug_printv("Calling seekposforce");
 
-    pbuf->seekposforce(3541); // D7  MULTIPLICATION SIGN
-    auto test = (*pbuf)[9]; // get 3550th character
-    Debug_printf("10th character below will be: %c", test); // or - send the char across IEC to our C64
+    // pbuf->seekposforce(3541); // D7  MULTIPLICATION SIGN
+    // auto test = (*pbuf)[9]; // get 3550th character
+    // Debug_printf("10th character below will be: %c", test); // or - send the char across IEC to our C64
 
-    readABit(pbuf);
-    pbuf->seekpos(3662); // D9  CAPITAL LETTER U WITH GRAVE
-    readABit(pbuf);
-    pbuf->seekpos(3597); // D8  CAPITAL LETTER O WITH STROKE
-    readABit(pbuf);
+    // readABit(pbuf);
+    // pbuf->seekpos(3662); // D9  CAPITAL LETTER U WITH GRAVE
+    // readABit(pbuf);
+    // pbuf->seekpos(3597); // D8  CAPITAL LETTER O WITH STROKE
+    // readABit(pbuf);
 
     stream.close();
     
@@ -700,7 +700,7 @@ void runTestsSuite() {
     //runFSTest("https://c64.meatloaf.cc/geckos-c64.d64", "https://c64.meatloaf.cc/geckos-c64.d64/index.html");
     //runFSTest("sd:/geckos-c64.d64", "sd:/geckos-c64.d64/index.html");
     //  https://c64.meatloaf.cc
-    runFSTest("http://info.cern.ch/hypertext/WWW/TheProject.html","http://info.cern.ch/hypertext/WWW/TheProject.html");
+    runFSTest("http://info.cern.ch/hypertext/WWW/TheProject.html","http://meatloaf.cc/test.txt");
     // runFSTest("cs:/apps/ski_writer.d64","cs:/apps/ski_writer.d64/EDITOR.HLP");
 
 

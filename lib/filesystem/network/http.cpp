@@ -371,14 +371,16 @@ int MeatHttpClient::openAndFetchHeaders(esp_http_client_method_t meth, int resum
         esp_http_client_set_header(m_http, "range", str);
     }
 
-    //Debug_printv("--- PRE OPEN");
+    Debug_printv("--- PRE OPEN");
 
     esp_err_t initOk = esp_http_client_open(m_http, 0); // or open? It's not entirely clear...
+
+    Debug_printv("--- POST OPEN");
 
     if(initOk == ESP_FAIL)
         return 0;
 
-    //Debug_printv("--- PRE FETCH HEADERS");
+    Debug_printv("--- PRE FETCH HEADERS");
 
     int lengthResp = esp_http_client_fetch_headers(m_http);
     if(m_length == -1 && lengthResp > 0) {
@@ -387,7 +389,7 @@ int MeatHttpClient::openAndFetchHeaders(esp_http_client_method_t meth, int resum
         m_bytesAvailable = m_length;
     }
 
-    //Debug_printv("--- PRE GET STATUS CODE");
+    Debug_printv("--- PRE GET STATUS CODE");
 
     return esp_http_client_get_status_code(m_http);
 }
@@ -402,11 +404,11 @@ esp_err_t MeatHttpClient::_http_event_handler(esp_http_client_event_t *evt)
             break;
 
         case HTTP_EVENT_ON_CONNECTED: // Once the HTTP has been connected to the server, no data exchange has been performed
-            // Debug_printv("HTTP_EVENT_ON_CONNECTED");
+            Debug_printv("HTTP_EVENT_ON_CONNECTED");
             break;
 
         case HTTP_EVENT_HEADER_SENT: // After sending all the headers to the server
-            // Debug_printv("HTTP_EVENT_HEADER_SENT");
+            Debug_printv("HTTP_EVENT_HEADER_SENT");
             break;
 
         case HTTP_EVENT_ON_HEADER: // Occurs when receiving each header sent from the server
@@ -475,16 +477,16 @@ esp_err_t MeatHttpClient::_http_event_handler(esp_http_client_event_t *evt)
             break;
 
         case HTTP_EVENT_ON_DATA: // Occurs multiple times when receiving body data from the server. MAY BE SKIPPED IF BODY IS EMPTY!
-            //Debug_printv("HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
+            Debug_printv("HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
             {
                 int status = esp_http_client_get_status_code(meatClient->m_http);
 
                 if ((status == HttpStatus_Found || status == HttpStatus_MovedPermanently || status == 303) /*&& client->_redirect_count < (client->_max_redirects - 1)*/)
                 {
-                    //Debug_printv("HTTP_EVENT_ON_DATA: Redirect response body, ignoring");
+                    Debug_printv("HTTP_EVENT_ON_DATA: Redirect response body, ignoring");
                 }
                 else {
-                    //Debug_printv("HTTP_EVENT_ON_DATA: Got response body");
+                    Debug_printv("HTTP_EVENT_ON_DATA: Got response body");
                 }
 
 
@@ -503,10 +505,10 @@ esp_err_t MeatHttpClient::_http_event_handler(esp_http_client_event_t *evt)
             // This may get called more than once if esp_http_client decides to retry in order to handle a redirect or auth response
             //Debug_printv("HTTP_EVENT_ON_FINISH %u\n", uxTaskGetStackHighWaterMark(nullptr));
             // Keep track of how many times we "finish" reading a response from the server
-            //Debug_printv("HTTP_EVENT_ON_FINISH");
+            Debug_printv("HTTP_EVENT_ON_FINISH");
             break;
         case HTTP_EVENT_DISCONNECTED: // The connection has been disconnected
-            //Debug_printv("HTTP_EVENT_DISCONNECTED");
+            Debug_printv("HTTP_EVENT_DISCONNECTED");
             break;
     }
     return ESP_OK;
