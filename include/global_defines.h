@@ -15,8 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Meatloaf. If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef GLOBAL_DEFINES_H
-#define GLOBAL_DEFINES_H
+#ifndef MEATINCLUDE_GLOBAL_DEFINES
+#define MEATINCLUDE_GLOBAL_DEFINES
 
 #include "version.h"
 #include "ssid.h"
@@ -89,4 +89,4 @@
 
 
 
-#endif // GLOBAL_DEFINES_H
+#endif /* MEATINCLUDE_GLOBAL_DEFINES */
