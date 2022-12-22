@@ -247,7 +247,11 @@ bool MeatHttpClient::seek(size_t pos) {
     if(isFriendlySkipper) {
         esp_http_client_close(m_http);
 
+        Debug_printv("In http seek, pre processRedirects");
+
         bool op = processRedirectsAndOpen(pos);
+
+        Debug_printv("In http seek, post processRedirects");
 
         Debug_printv("SEEK in HttpIStream %s: range request RC=%d", url.c_str(), lastRC);
         

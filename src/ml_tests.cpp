@@ -274,7 +274,11 @@ void readABit(Meat::mfilebuf<char>* pbuf)
 
 void seekTest()
 {
+    Debug_printv("pre declaration");
+
     Meat::iostream stream("https://www.w3.org/TR/PNG/iso_8859-1.txt");
+
+    Debug_printv("post declaration");
 
     Debug_printv("Trying to open txt on http");
 
@@ -282,9 +286,11 @@ void seekTest()
         return;
 
     // 1. we cen obtain raw C++ buffer from our stream:
+
     auto pbuf = stream.rdbuf();
 
-    Debug_printv("Seeking");
+
+    Debug_printv("Calling seekposforce");
 
     pbuf->seekposforce(3541); // D7  MULTIPLICATION SIGN
     auto test = (*pbuf)[9]; // get 3550th character
@@ -484,11 +490,11 @@ void testReader(MFile* srcFile) {
             Debug_printf("Reader returned EOF! :(");
         }
 
-        std::string line;
+        char line;
 
         while(!istream.eof()) {
-            istream >> line;
-            Serial.printf("%s", line.c_str());
+            istream.get(line);
+            Serial.printf("%c", line);
         }
 
         istream.close();
@@ -649,7 +655,7 @@ void runTestsSuite() {
     fnSystem.delay_microseconds(pdMS_TO_TICKS(5000)); // 5sec after connect
 
     //commodoreServer();
-    seekTest();
+    //seekTest();
 
     // ====== Per FS dir, read and write region =======================================
 
@@ -661,7 +667,7 @@ void runTestsSuite() {
     //runFSTest("https://c64.meatloaf.cc/geckos-c64.d64", "https://c64.meatloaf.cc/geckos-c64.d64/index.html");
     //runFSTest("sd:/geckos-c64.d64", "sd:/geckos-c64.d64/index.html");
     //  https://c64.meatloaf.cc
-    // runFSTest("http://info.cern.ch/hypertext/WWW/TheProject.html","http://info.cern.ch/hypertext/WWW/TheProject.html");
+    runFSTest("http://info.cern.ch/hypertext/WWW/TheProject.html","http://info.cern.ch/hypertext/WWW/TheProject.html");
     // runFSTest("cs:/apps/ski_writer.d64","cs:/apps/ski_writer.d64/EDITOR.HLP");
 
 

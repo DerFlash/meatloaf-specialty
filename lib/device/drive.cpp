@@ -1016,7 +1016,7 @@ bool iecDrive::sendFile()
 	{
 		char nextChar;
 
-		(*istream) >> nextChar;
+		(*istream).get(nextChar);
 		iecStream.write(&nextChar, 1);
 
 		// Exit if ATN is PULLED while sending
