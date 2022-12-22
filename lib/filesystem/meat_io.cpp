@@ -15,6 +15,7 @@
 //#include "wrappers/directory_stream.h"
 
 // Archive
+#include "archive/zip.h"
 
 // Cartridge
 
