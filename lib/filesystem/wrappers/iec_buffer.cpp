@@ -15,7 +15,7 @@ size_t oiecstream::easyWrite(bool lastOne) {
     Debug_printv("IEC easyWrite will try to send %d bytes over IEC (but buffer contains %d)", count-1, count);
 
     for(auto b = pbase(); b<pptr()-1; b++) {
-        Serial.printf("%c",*b);
+        //Serial.printf("%c",*b);
         if(m_iec->send(*b)) written++;
         else
             break;
