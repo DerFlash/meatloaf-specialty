@@ -24,7 +24,8 @@ size_t oiecstream::easyWrite(bool lastOne) {
             // what should happen here?
             // should the badbit be set when send returns false?
             // should the badbit be set when ATN was pulled?
-            break;
+            setp(data+written, data+IEC_BUFFER_SIZE); // set pbase to point to next unwritten char
+            return written;
         }
     }
 
