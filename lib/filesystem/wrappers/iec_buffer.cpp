@@ -14,6 +14,9 @@ size_t oiecstream::easyWrite(bool lastOne) {
     auto count = pptr()-pbase();
     Debug_printv("IEC easyWrite will try to send %d bytes over IEC (but buffer contains %d)", count-1, count);
 
+    //  pptr =  Returns the pointer to the current character (put pointer) in the put area.
+    //  pbase = Returns the pointer to the beginning ("base") of the put area.
+    //  epptr = Returns the pointer one past the end of the put area.
     for(auto b = pbase(); b<pptr()-1; b++) {
         //Serial.printf("%c",*b);
         if(m_iec->send(*b)) written++;
@@ -21,17 +24,21 @@ size_t oiecstream::easyWrite(bool lastOne) {
             break;
     }
 
-    if(lastOne) {
-        // ok, so we have last character, signal it
-        Debug_printv("IEC easyWrite writes THE LAST ONE with EOI:%c", *(pptr()-1));
+    char lastChar = *(pptr()-1); // ok, this should be the last char, left out from the above loop
 
-        m_iec->sendEOI(*(pptr()-1));
-        setp(data, data+IEC_BUFFER_SIZE);
+    if(!lastOne) {
+        // probably more bytes to come, so
+        // here we wrote all buffer chars but the last one.
+        // we will take this last byte, put it at position 0 and set pptr to 1
+        data[0] = lastChar; // let's put it at position 0
+        setp(data+1, data+IEC_BUFFER_SIZE); // and set pptr to 1 to tell there's 1 byte in our buffer
+        Debug_printv("IEC easyWrite writes leaving one char behind");
     }
     else {
-        // let's shift the buffer to the last character
-        setp(pptr()-1, data+IEC_BUFFER_SIZE);
-        Debug_printv("IEC easyWrite writes leaving one char behind");
+        // ok, so we have last character, signal it
+        Debug_printv("IEC easyWrite writes THE LAST ONE with EOI:%c", lastChar);
+        m_iec->sendEOI(lastChar);
+        setp(data, data+IEC_BUFFER_SIZE);
     }
 
     return written;
