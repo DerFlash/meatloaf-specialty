@@ -31,7 +31,7 @@ size_t oiecstream::easyWrite(bool lastOne) {
     char lastChar = *(pptr()); // ok, this should be the last char, left out from the above loop
     Debug_printv("lastChar[%.2X]", lastChar);
 
-    if(!lastOne) {
+    if(!lastOne && !eof()) {
         // probably more bytes to come, so
         // here we wrote all buffer chars but the last one.
         // we will take this last byte, put it at position 0 and set pptr to 1

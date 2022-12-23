@@ -1045,7 +1045,7 @@ bool iecDrive::sendFile()
 		// if ( i % 8 == 0)
 		// 	Debug_println("");
 
-		// Debug_printf("%.2X ", nextChar);
+		Debug_printf("%.2X ", nextChar);
 
 		i++;
 	}
