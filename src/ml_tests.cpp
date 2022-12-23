@@ -576,19 +576,9 @@ void runFSTest(std::string dirPath, std::string filePath) {
 
     auto testDir = Meat::New<MFile>(dirPath);
     auto testFile = Meat::New<MFile>(filePath);
-    auto destFile = Meat::New<MFile>(testDir->cd("internationale.txt"));
+    //auto destFile = Meat::New<MFile>(testDir->cd("internationale.txt"));
 
     // if this doesn't work reading and writing files won't workk
-
-    if(testFile != nullptr) {
-        dumpFileProperties(testFile.get());
-        testReader(testFile.get());
-        //testWriter(destFile.get());
-        //testReader(destFile.get());
-    }
-    else {
-        Debug_printf("*** WARNING - %s instance couldn't be created!, , testDir->url.c_str()");
-    }
 
     if(!dirPath.empty() && testDir->exists() && testDir->isDirectory()) {
         dumpFileProperties(testDir.get());
@@ -598,6 +588,16 @@ void runFSTest(std::string dirPath, std::string filePath) {
     }
     else {
         Debug_printf("*** WARNING - %s instance couldn't be created!", testDir->url.c_str());
+    }
+
+    if(testFile != nullptr) {
+        dumpFileProperties(testFile.get());
+        testReader(testFile.get());
+        //testWriter(destFile.get());
+        //testReader(destFile.get());
+    }
+    else {
+        Debug_printf("*** WARNING - %s instance couldn't be created!", testFile->url.c_str());
     }
 
     Debug_println("**********************************************************************\n\n");
@@ -700,7 +700,7 @@ void runTestsSuite() {
     //runFSTest("https://c64.meatloaf.cc/geckos-c64.d64", "https://c64.meatloaf.cc/geckos-c64.d64/index.html");
     //runFSTest("sd:/geckos-c64.d64", "sd:/geckos-c64.d64/index.html");
     //  https://c64.meatloaf.cc
-    runFSTest("http://info.cern.ch/hypertext/WWW/TheProject.html","http://meatloaf.cc/test.txt");
+    runFSTest("/","https://meatloaf.cc/test.txt");
     // runFSTest("cs:/apps/ski_writer.d64","cs:/apps/ski_writer.d64/EDITOR.HLP");
 
 
@@ -735,9 +735,9 @@ void runTestsSuite() {
 
     // Debug_printv("SD Card File System");
     //std::string basepath = fnSDFAT.basepath();
-    std::string basepath = "/";
-    Debug_printv("basepath[%s]", basepath.c_str());
-    testDirectory(MFSOwner::File( basepath ), true);
+    //std::string basepath = "/";
+    //Debug_printv("basepath[%s]", basepath.c_str());
+    //testDirectory(MFSOwner::File( basepath ), true);
     //testDirectoryStandard( "/sd/" );
     // testDirectory(MFSOwner::File("/sd/"), true);
 
@@ -757,7 +757,7 @@ void runTestsSuite() {
 
     //testRedirect();
     //testStrings();
-    hexDump(MFSOwner::File("/fb64"));
+    //hexDump(MFSOwner::File("/fb64"));
 
     Debug_println("*** All tests finished ***");
 }

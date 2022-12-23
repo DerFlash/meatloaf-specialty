@@ -12,7 +12,7 @@
 #include <memory>
 #include "U8Char.h"
 
-#define IEC_BUFFER_SIZE 1024
+#define IEC_BUFFER_SIZE 255 // 1024
 /********************************************************
  * oiecbuf
  * 
@@ -105,7 +105,10 @@ public:
         m_iec = iec;
         setp(data, data+IEC_BUFFER_SIZE);
         if(iec != nullptr)
+        {
             m_isOpen = true;
+            clear();
+        }
     }
 
     virtual void close() {
