@@ -47,7 +47,7 @@ int entry_buffer::underflow()
 
     if( _buff_size < 0 )
     {
-      throw archive_exception( "Archive reader buffer reading error." );
+      //throw archive_exception( "Archive reader buffer reading error." );
     }
 
     if( _buff_size )

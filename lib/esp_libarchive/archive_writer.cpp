@@ -55,7 +55,7 @@ void writer::add_entry( entry& a_entry )
 {
   if( archive_write_header( _archive.get(), a_entry.get_entry() ) != ARCHIVE_OK)
   {
-    throw archive_exception( "Error writing header to archive!" );
+    // throw archive_exception( "Error writing header to archive!" );
   }
 
   auto& stream = a_entry.get_stream();
@@ -131,7 +131,7 @@ void writer::init_data()
 {
   if(archive_write_open( _archive.get(), &_writer_container, nullptr, ns_writer::writer_callback, nullptr ) != ARCHIVE_OK)
   {
-    throw archive_exception( "Failed to write the archive!" );
+    //throw archive_exception( "Failed to write the archive!" );
   }
 }
 

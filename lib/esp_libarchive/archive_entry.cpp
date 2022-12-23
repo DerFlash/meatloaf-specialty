@@ -252,7 +252,8 @@ std::istream& entry::get_stream()
     return _stream;
   }
 
-  throw archive_exception( "Archive entry stream was already read!" );
+  //throw archive_exception( "Archive entry stream was already read!" );
+  return _stream;
 }
 
 }

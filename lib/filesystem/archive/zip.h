@@ -6,7 +6,7 @@
 
 void test( void )
 {
-    try
+    // try
     {
         namespace ar = ns_archive::ns_reader;
         std::fstream fs("some_tar_file.tar");
@@ -20,8 +20,8 @@ void test( void )
             std::cout << entry->get_stream().rdbuf() << std::endl << std::endl;
         }
     }
-    catch(ns_archive::archive_exception& e)
-    {
-        std::cout << e.what() << std::endl;
-    }
+    // catch(ns_archive::archive_exception& e)
+    // {
+    //     std::cout << e.what() << std::endl;
+    // }
 }

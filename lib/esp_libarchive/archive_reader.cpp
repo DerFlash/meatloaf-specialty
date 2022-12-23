@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "archive_reader.hpp"
 
 #include "archive_exception.hpp"
-#include "../libarchive/archive_entry.h"
+#include "libarchive/archive_entry.h"
 
 namespace ns_archive {
 
@@ -45,7 +45,7 @@ std::shared_ptr<entry> reader::get_next_entry()
 {
   if(!has_next_entry())
   {
-    throw archive_exception( "get_next_entry was called after all the entries were read" );
+    //throw archive_exception( "get_next_entry was called after all the entries were read" );
   }
 
   std::shared_ptr<entry> a_entry( _next_entry );
@@ -136,7 +136,7 @@ void reader::init_data()
 {
   if(archive_read_open( _archive.get(), &_reader_container, nullptr, ns_reader::reader_callback, nullptr ) != ARCHIVE_OK)
   {
-    throw archive_exception( "Failed to read the archive!" );
+    //throw archive_exception( "Failed to read the archive!" );
   }
 }
 

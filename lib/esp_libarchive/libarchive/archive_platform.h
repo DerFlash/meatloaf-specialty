@@ -41,16 +41,18 @@
 /* archive.h and archive_entry.h require this. */
 #define	__LIBARCHIVE_BUILD 1
 
-#if defined(PLATFORM_CONFIG_H)
-/* Use hand-built config.h in environments that need it. */
-#include PLATFORM_CONFIG_H
-#elif defined(HAVE_CONFIG_H)
-/* Most POSIX platforms use the 'configure' script to build config.h */
-#include "config.h"
-#else
-/* Warn if the library hasn't been (automatically or manually) configured. */
-#error Oops: No config.h and no pre-built configuration in archive_platform.h.
-#endif
+#include "config_esp32.h"
+
+// #if defined(PLATFORM_CONFIG_H)
+// /* Use hand-built config.h in environments that need it. */
+// #include PLATFORM_CONFIG_H
+// #elif defined(HAVE_CONFIG_H)
+// /* Most POSIX platforms use the 'configure' script to build config.h */
+// #include "config.h"
+// #else
+// /* Warn if the library hasn't been (automatically or manually) configured. */
+// #error Oops: No config.h and no pre-built configuration in archive_platform.h.
+// #endif
 
 /* On macOS check for some symbols based on the deployment target version.  */
 #if defined(__APPLE__)

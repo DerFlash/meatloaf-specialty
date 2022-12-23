@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ARCHIVE_READER_ENTRY_BUFFER_HPP_INCLUDED
 
 #include <streambuf>
-#include "../libarchive/archive.h"
+#include "libarchive/archive.h"
 
 namespace ns_archive {
 namespace ns_reader {

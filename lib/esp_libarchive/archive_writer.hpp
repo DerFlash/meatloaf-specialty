@@ -31,7 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <ostream>
 #include <memory>
-#include "archive.h"
+#include "libarchive/archive.h"
 
 #include "archive_writer_format.hpp"
 #include "archive_writer_filter.hpp"

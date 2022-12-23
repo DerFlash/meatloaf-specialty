@@ -29,8 +29,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef ARCHIVE_WRITER_ENTRY_HPP_INCLUDED
 #define ARCHIVE_WRITER_ENTRY_HPP_INCLUDED
 
-#include "../libarchive/archive.h"
-#include "../libarchive/archive_entry.h"
+#include "libarchive/archive.h"
+#include "libarchive/archive_entry.h"
 #include <string>
 #include <cstdint>
 #include <istream>

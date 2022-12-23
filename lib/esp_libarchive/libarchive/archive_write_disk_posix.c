@@ -514,7 +514,7 @@ lazy_stat(struct archive_write_disk *a)
 	 * XXX At this point, symlinks should not be hit, otherwise
 	 * XXX a race occurred.  Do we want to check explicitly for that?
 	 */
-	if (lstat(a->name, &a->st) == 0) {
+	if (stat(a->name, &a->st) == 0) {
 		a->pst = &a->st;
 		return (ARCHIVE_OK);
 	}
@@ -2154,7 +2154,7 @@ restore_entry(struct archive_write_disk *a)
 		 * then don't follow it.
 		 */
 		if (r != 0 || !S_ISDIR(a->mode))
-			r = lstat(a->name, &a->st);
+			r = stat(a->name, &a->st);
 		if (r != 0) {
 			archive_set_error(&a->archive, errno,
 			    "Can't stat existing object");
@@ -2550,7 +2550,7 @@ _archive_write_disk_close(struct archive *_a)
 					goto skip_fixup_entry;
 				} else
 #endif
-				if (lstat(p->name, &st) != 0 ||
+				if (stat(p->name, &st) != 0 ||
 				    la_verify_filetype(st.st_mode,
 				    p->filetype) == 0) {
 					goto skip_fixup_entry;

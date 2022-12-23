@@ -32,7 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <istream>
 #include <memory>
 #include <vector>
-#include "../libarchive/archive.h"
+#include "libarchive/archive.h"
 
 #include "archive_reader_format.hpp"
 #include "archive_reader_filter.hpp"

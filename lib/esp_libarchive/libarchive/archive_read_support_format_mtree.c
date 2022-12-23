@@ -1280,7 +1280,7 @@ parse_file(struct archive_read *a, struct archive_entry *entry,
 				mtree->fd = -1;
 				st = NULL;
 			}
-		} else if (lstat(path, st) == -1) {
+		} else if (stat(path, st) == -1) {
 			st = NULL;
 		}
 
