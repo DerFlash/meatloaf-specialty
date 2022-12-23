@@ -1020,7 +1020,6 @@ bool iecDrive::sendFile()
 
 		(*istream).get(nextChar);
 		iecStream.write(&nextChar, 1);
-		//IEC.send(nextChar);
 
 		// // Exit if ATN is PULLED while sending
 		// if ( IEC.protocol->flags bitand ATN_PULLED )
@@ -1043,10 +1042,10 @@ bool iecDrive::sendFile()
 			fnLedManager.toggle(eLed::LED_BUS);
 		}
 
-		if ( i % 8 == 0)
-			Debug_println("");
+		// if ( i % 8 == 0)
+		// 	Debug_println("");
 
-		Debug_printf("%.2X ", nextChar);
+		// Debug_printf("%.2X ", nextChar);
 
 		i++;
 	}
