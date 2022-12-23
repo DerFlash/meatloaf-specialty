@@ -19,9 +19,13 @@ size_t oiecstream::easyWrite(bool lastOne) {
     //  epptr = Returns the pointer one past the end of the put area.
     for(auto b = pbase(); b<pptr()-1; b++) {
         //Serial.printf("%c",*b);
-        if(m_iec->send(*b)) written++;
-        else
+        if(m_iec->send(*b) && !IEC.protocol->flags bitand ATN_PULLED) written++;
+        else {
+            // what should happen here?
+            // should the badbit be set when send returns false?
+            // should the badbit be set when ATN was pulled?
             break;
+        }
     }
 
     char lastChar = *(pptr()-1); // ok, this should be the last char, left out from the above loop
