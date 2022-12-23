@@ -19,7 +19,7 @@ size_t oiecstream::easyWrite(bool lastOne) {
     //  epptr = Returns the pointer one past the end of the put area.
     for(auto b = pbase(); b<pptr()-1; b++) {
         //Serial.printf("%c",*b);
-        if(m_iec->send(*b) && !IEC.protocol->flags bitand ATN_PULLED) written++;
+        if(m_iec->send(*b) && !(IEC.protocol->flags bitand ATN_PULLED) ) written++;
         else {
             // what should happen here?
             // should the badbit be set when send returns false?
