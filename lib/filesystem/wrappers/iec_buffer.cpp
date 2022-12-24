@@ -17,7 +17,7 @@ size_t oiecstream::easyWrite(bool lastOne) {
     //  pptr =  Returns the pointer to the current character (put pointer) in the put area.
     //  pbase = Returns the pointer to the beginning ("base") of the put area.
     //  epptr = Returns the pointer one past the end of the put area.
-    for(auto b = pbase(); b < pptr(); b++) {
+    for(auto b = pbase(); b < pptr()-1; b++) {
         //Serial.printf("%c",*b);
         if(m_iec->send(*b) && !(IEC.protocol->flags bitand ATN_PULLED) ) written++;
         else {
