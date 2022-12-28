@@ -982,59 +982,14 @@ bool iecDrive::sendFile()
 	// 		}
 	// 	}
 
-	// if( this->data.channel == 0 )
-	// {
-	// 	// Get/Send file load address
-	// 	i = 2;
-	// 	char loadAddrByte;
-
-	// 	(*istream) >> loadAddrByte;
-
-	// 	/*success = */IEC.send(loadAddrByte);
-	// 	load_address = loadAddrByte & 0x00FF; // low byte
-	// 	sys_address = loadAddrByte;
-	// 	(*istream) >> loadAddrByte;
-	// 	/*success = */IEC.send(loadAddrByte);
-	// 	load_address = load_address | loadAddrByte << 8;  // high byte
-	// 	sys_address += loadAddrByte * 256;
-
-	// 	// Get SYSLINE
-	// }
-
-	// first - let's write the byte that wasn't written before
-	// ok - but if we are indeed resumed then the above code for load_addres and sys_addres
-	// doesn't make any sense!
-	// uint16_t lastByte = retrieveLastByte(); // and the byte gets flushed!
-	// if(lastByte != 999) {
-	// 	char nextChar = (char) lastByte;
-	// 	iecStream.write(&nextChar, 1);
-	// 	flushLastByte();
-	// }
-
 	// Debug_printf("sendFile: [$%.4X]\r\n=================================\r\n", load_address);
 	Debug_printv("peek[%d] istream[%d] iecstream[%d] lastbyte[%d]", istream->peek(), istream->bad(), iecStream.bad());
 	while( !istream->eof() && istream->bad() == 0 && iecStream.bad() == 0 )
-	//while( !istream->eof() && istream->bad() == 0 )
 	{
 		char nextChar;
 
 		(*istream).get(nextChar);
 		iecStream.write(&nextChar, 1);
-
-		// // Exit if ATN is PULLED while sending
-		// if ( IEC.protocol->flags bitand ATN_PULLED )
-		// {
-		// 	Debug_printv("ATN pulled while sending. i[%d]", i);
-		// 	if ( IEC.data.channel > 1 )
-		// 	{
-		// 		storeLastByte(nextChar);
-		// 		//setDeviceStatus( 74 );
-		// 		//success = true;
-
-		// 	}
-
-		// 	return false;
-		// }
 
 		// Toggle LED
 		if (i % 50 == 0)

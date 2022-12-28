@@ -17,14 +17,37 @@ size_t oiecstream::easyWrite(bool lastOne) {
     //  pptr =  Returns the pointer to the current character (put pointer) in the put area.
     //  pbase = Returns the pointer to the beginning ("base") of the put area.
     //  epptr = Returns the pointer one past the end of the put area.
-    for(auto b = pbase(); b < pptr(); b++) {
+    for(auto b = pbase(); b < pptr()-1; b++) {
         //Serial.printf("%c",*b);
-        if(m_iec->send(*b) && !(IEC.protocol->flags bitand ATN_PULLED) ) written++;
-        else {
+        bool sendSuccess = m_iec->send(*b);
+        if(sendSuccess && !(IEC.protocol->flags bitand ATN_PULLED) ) written++;
+        else if(!sendSuccess) {
+            /*
+            istream->good(); // rdstate == 0
+            istream->bad(); // rdstate() & badbit) != 0
+            istream->eof(); // rdstate() & eofbit) != 0
+            istream->fail(); // >rdstate() & (badbit | failbit)) != 0
+            istream->rdstate();
+            istream->setstate();
+            _S_goodbit 		= 0,
+            _S_badbit 		= 1L << 0,
+            _S_eofbit 		= 1L << 1,
+            _S_failbit		= 1L << 2,
+            _S_ios_iostate_end = 1L << 16,
+            _S_ios_iostate_max = __INT_MAX__,
+            _S_ios_iostate_min = ~__INT_MAX__
+            */
+
             // what should happen here?
             // should the badbit be set when send returns false?
-            // should the badbit be set when ATN was pulled?
-            break;
+            setstate(badbit);
+            setp(data+written, data+IEC_BUFFER_SIZE); // set pbase to point to next unwritten char
+            return written;
+        }
+        else {
+            // ATN was pulled
+            setp(data+written, data+IEC_BUFFER_SIZE); // set pbase to point to next unwritten char
+            return written;
         }
     }
 
