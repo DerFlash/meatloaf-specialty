@@ -24,22 +24,6 @@ size_t oiecstream::easyWrite(bool lastOne) {
         //bool sendSuccess = true;
         if(sendSuccess && !(IEC.protocol->flags bitand ATN_PULLED) ) written++;
         else if(!sendSuccess) {
-            /*
-            istream->good(); // rdstate == 0
-            istream->bad(); // rdstate() & badbit) != 0
-            istream->eof(); // rdstate() & eofbit) != 0
-            istream->fail(); // >rdstate() & (badbit | failbit)) != 0
-            istream->rdstate();
-            istream->setstate();
-            _S_goodbit 		= 0,
-            _S_badbit 		= 1L << 0,
-            _S_eofbit 		= 1L << 1,
-            _S_failbit		= 1L << 2,
-            _S_ios_iostate_end = 1L << 16,
-            _S_ios_iostate_max = __INT_MAX__,
-            _S_ios_iostate_min = ~__INT_MAX__
-            */
-
             // what should happen here?
             // should the badbit be set when send returns false?
             setstate(badbit);

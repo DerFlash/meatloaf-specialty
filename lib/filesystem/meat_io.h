@@ -15,7 +15,9 @@
 #include "string_utils.h"
 #include "U8Char.h"
 
-#define _MEAT_NO_DATA_AVAIL -69
+#define _MEAT_NO_DATA_AVAIL 1L << 8
+
+static const uint32_t ndabit = _MEAT_NO_DATA_AVAIL;
 
 /********************************************************
  * Universal file
