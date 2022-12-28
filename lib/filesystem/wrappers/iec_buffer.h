@@ -12,7 +12,7 @@
 #include <memory>
 #include "U8Char.h"
 
-#define IEC_BUFFER_SIZE 255 // 1024
+#define IEC_BUFFER_SIZE 25 // 1024
 /********************************************************
  * oiecbuf
  * 

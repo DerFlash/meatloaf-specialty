@@ -20,6 +20,7 @@
 #include "../include/make_unique.h"
 #include "basic_config.h"
 #include "device_db.h"
+#include "../filesystem/wrappers/iec_buffer.h"
 
 //#include "fnHttpClient.h"
 
@@ -270,6 +271,19 @@ void readABit(Meat::mfilebuf<char>* pbuf)
     } while (pbuf->sgetc() != EOF && i < 100);
 
 
+}
+
+void iecbuffertest() {
+    char str[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        char nextChar;
+
+        oiecstream iecStream;
+        iecStream.open(&IEC);
+
+        for(int i = 0; i<95; i++) {
+		    nextChar=str[i];
+		    iecStream.write(&nextChar, 1);
+        }
 }
 
 void seekTest()
@@ -687,6 +701,7 @@ void runTestsSuite() {
     }
     fnSystem.delay_microseconds(pdMS_TO_TICKS(5000)); // 5sec after connect
 
+    //iecbuffertest();
     //commodoreServer();
     //seekTest();
 

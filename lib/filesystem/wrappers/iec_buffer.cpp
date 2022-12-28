@@ -11,15 +11,17 @@ size_t oiecstream::easyWrite(bool lastOne) {
 
     // we're always writing without the last character in buffer just to be able to send this special delay
     // if this is last character in the file
-    auto count = pptr()-pbase();
-    Debug_printv("IEC easyWrite will try to send %d bytes over IEC (but buffer contains %d)", count-1, count);
+    auto lastCharPos = (lastOne) ? pptr()-1 : pptr();
+    auto count = pptr()-pbase() + 1;
+    Debug_printv("IEC easyWrite will try to send %d bytes over IEC (but buffer contains %d), lastOne=%d", count-1, count, lastOne);
 
     //  pptr =  Returns the pointer to the current character (put pointer) in the put area.
     //  pbase = Returns the pointer to the beginning ("base") of the put area.
     //  epptr = Returns the pointer one past the end of the put area.
-    for(auto b = pbase(); b < pptr()-1; b++) {
-        //Serial.printf("%c",*b);
+    for(auto b = pbase(); b < lastCharPos; b++) {
+        Serial.printf("%c",*b);
         bool sendSuccess = m_iec->send(*b);
+        //bool sendSuccess = true;
         if(sendSuccess && !(IEC.protocol->flags bitand ATN_PULLED) ) written++;
         else if(!sendSuccess) {
             /*
@@ -51,9 +53,8 @@ size_t oiecstream::easyWrite(bool lastOne) {
         }
     }
 
-    char lastChar = *(pptr()); // ok, this should be the last char, left out from the above loop
-    Debug_printv("lastChar[%.2X]", lastChar);
-
+    char lastChar = *(lastCharPos);
+    
     if(!lastOne && !eof()) {
         // probably more bytes to come, so
         // here we wrote all buffer chars but the last one.
@@ -61,11 +62,11 @@ size_t oiecstream::easyWrite(bool lastOne) {
         data[0] = lastChar; // let's put it at position 0
         setp(data, data+IEC_BUFFER_SIZE); // reset the beginning and ending buffer pointers
         pbump(1); // and set pptr to 1 to tell there's 1 byte in our buffer
-        Debug_printv("IEC easyWrite writes leaving one char behind: data0[%.2X]", data[0]);
+        Debug_printv("IEC easyWrite copied last char from previous buff to the start of new buffer: %c [%.2X]", data[0]);
     }
     else {
         // ok, so we have last character, signal it
-        Debug_printv("IEC easyWrite writes THE LAST ONE with EOI: [%.2X]", lastChar);
+        Debug_printv("IEC easyWrite writes THE LAST ONE with EOI: %c [%.2X]", lastChar);
         m_iec->sendEOI(lastChar);
         setp(data, data+IEC_BUFFER_SIZE);
     }
