@@ -635,69 +635,69 @@ namespace Meat
             return (this->rdstate() & ndabit) != 0;
         }
 
-        basic_fstream<_CharT, _Traits> &mlget(char_type &__c)
-        {
-            // first naive implementation...
+        // basic_fstream<_CharT, _Traits> &mlget(char_type &__c)
+        // {
+        //     // first naive implementation...
 
-            /*
-            istream->good(); // rdstate == 0
-            istream->bad(); // rdstate() & badbit) != 0
-            istream->eof(); // rdstate() & eofbit) != 0
-            istream->fail(); // >rdstate() & (badbit | failbit)) != 0
-            istream->rdstate();
-            istream->setstate();
-            _S_goodbit 		= 0,
-            _S_badbit 		= 1L << 0,
-            _S_eofbit 		= 1L << 1,
-            _S_failbit		= 1L << 2,
-            _S_ios_iostate_end = 1L << 16,
-            _S_ios_iostate_max = __INT_MAX__,
-            _S_ios_iostate_min = ~__INT_MAX__
-            */
+        //     /*
+        //     istream->good(); // rdstate == 0
+        //     istream->bad(); // rdstate() & badbit) != 0
+        //     istream->eof(); // rdstate() & eofbit) != 0
+        //     istream->fail(); // >rdstate() & (badbit | failbit)) != 0
+        //     istream->rdstate();
+        //     istream->setstate();
+        //     _S_goodbit 		= 0,
+        //     _S_badbit 		= 1L << 0,
+        //     _S_eofbit 		= 1L << 1,
+        //     _S_failbit		= 1L << 2,
+        //     _S_ios_iostate_end = 1L << 16,
+        //     _S_ios_iostate_max = __INT_MAX__,
+        //     _S_ios_iostate_min = ~__INT_MAX__
+        //     */
 
-            const int_type __cb = this->rdbuf()->sgetc(); // check next char, don't advance
-            if(traits_type::eq_int_type(__cb, traits_type::nda())) {
-                // it's NDA - ok, so let's set a proper mark on this stream
-                this->rdbuf()->sbumpc(); // skip nda and... 
-                this->setstate(ndabit); // set state to nda
-                return *this;
-            } 
-            else {
-                return get(__c);
-            }     
-            // _M_gcount = 0;
-            // ios_base::iostate __err = ios_base::goodbit;
-            // sentry __cerb(*this, true);
-            // if (__cerb)
-            // {
-            //     try
-            //     {
-            //         const int_type __cb = this->rdbuf()->sbumpc(); // check next char, don't advance
-            //         // 27.6.1.1 paragraph 3
-            //         if (!traits_type::eq_int_type(__cb, traits_type::nda()))
-            //         {
-            //             _M_gcount = 1;
-            //             __c = traits_type::to_char_type(__cb);
-            //         }
-            //         else
-            //             __err |= ios_base::eofbit;
-            //     }
-            //     catch(__cxxabiv1::__forced_unwind &)
-            //     {
-            //         this->setstate(ios_base::badbit);
-            //         __throw_exception_again;
-            //     }
-            //     catch(...)
-            //     {
-            //         this->_M_setstate(ios_base::badbit);
-            //     }
-            // }
-            // if (!_M_gcount)
-            //     __err |= ios_base::failbit;
-            // if (__err)
-            //     this->setstate(__err);
-            // return *this;
-        }
+        //     const int_type __cb = this->rdbuf()->sgetc(); // check next char, don't advance
+        //     if(traits_type::eq_int_type(__cb, my_char_traits::nda())) {
+        //         // it's NDA - ok, so let's set a proper mark on this stream
+        //         this->rdbuf()->sbumpc(); // skip nda and... 
+        //         this->setstate(ndabit); // set state to nda
+        //         return *this;
+        //     } 
+        //     else {
+        //         return get(__c);
+        //     }     
+        //     // _M_gcount = 0;
+        //     // ios_base::iostate __err = ios_base::goodbit;
+        //     // sentry __cerb(*this, true);
+        //     // if (__cerb)
+        //     // {
+        //     //     try
+        //     //     {
+        //     //         const int_type __cb = this->rdbuf()->sbumpc(); // check next char, don't advance
+        //     //         // 27.6.1.1 paragraph 3
+        //     //         if (!traits_type::eq_int_type(__cb, traits_type::nda()))
+        //     //         {
+        //     //             _M_gcount = 1;
+        //     //             __c = traits_type::to_char_type(__cb);
+        //     //         }
+        //     //         else
+        //     //             __err |= ios_base::eofbit;
+        //     //     }
+        //     //     catch(__cxxabiv1::__forced_unwind &)
+        //     //     {
+        //     //         this->setstate(ios_base::badbit);
+        //     //         __throw_exception_again;
+        //     //     }
+        //     //     catch(...)
+        //     //     {
+        //     //         this->_M_setstate(ios_base::badbit);
+        //     //     }
+        //     // }
+        //     // if (!_M_gcount)
+        //     //     __err |= ios_base::failbit;
+        //     // if (__err)
+        //     //     this->setstate(__err);
+        //     // return *this;
+        // }
     };
 
     typedef basic_fstream<char> iostream;

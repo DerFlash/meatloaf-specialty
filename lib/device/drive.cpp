@@ -988,7 +988,8 @@ bool iecDrive::sendFile()
 	{
 		char nextChar;
 
-		(*istream).mlget(nextChar);
+		(*istream).get(nextChar);
+		//(*istream).mlget(nextChar);
 		if((*istream).nda()) {
 			// OK, Jaimme. So you told me there's a way to signal "no data available on IEC", here's the place
 			// to send it:

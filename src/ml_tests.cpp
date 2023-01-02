@@ -693,18 +693,18 @@ void testStrings() {
 
 }
 
-void exTest() {
-    try {
-        auto x = 4/0;
-    }
-    catch(...) {
-        Debug_printf("Exceptions seem to be working\n");
-    }
-}
+// void exTest() {
+//     try {
+//         auto x = 4/0;
+//     }
+//     catch(...) {
+//         Debug_printf("Exceptions seem to be working\n");
+//     }
+// }
 
 void runTestsSuite() {
     // Delay waiting for wifi to connect
-    exTest();
+    //exTest();
 
     while ( !fnWiFi.connected() )
     {
