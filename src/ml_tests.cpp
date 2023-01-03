@@ -284,6 +284,8 @@ void iecbuffertest() {
 		    nextChar=str[i];
 		    iecStream.write(&nextChar, 1);
         }
+
+        iecStream.close();
 }
 
 void seekTest()
@@ -712,7 +714,7 @@ void runTestsSuite() {
     }
     fnSystem.delay_microseconds(pdMS_TO_TICKS(5000)); // 5sec after connect
 
-    //iecbuffertest();
+    iecbuffertest();
     //commodoreServer();
     //seekTest();
 
@@ -726,7 +728,7 @@ void runTestsSuite() {
     //runFSTest("https://c64.meatloaf.cc/geckos-c64.d64", "https://c64.meatloaf.cc/geckos-c64.d64/index.html");
     //runFSTest("sd:/geckos-c64.d64", "sd:/geckos-c64.d64/index.html");
     //  https://c64.meatloaf.cc
-    runFSTest("/","https://meatloaf.cc/test.txt");
+    //runFSTest("/","https://meatloaf.cc/test.txt");
     // runFSTest("cs:/apps/ski_writer.d64","cs:/apps/ski_writer.d64/EDITOR.HLP");
 
 

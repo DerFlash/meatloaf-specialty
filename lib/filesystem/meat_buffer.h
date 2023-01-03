@@ -44,8 +44,8 @@ namespace Meat
 
         mfilebuf()
         {
-            ibuffer = new char[ibufsize];
-            obuffer = new char[obufsize];
+            ibuffer = new char[ibufsize+1];
+            obuffer = new char[obufsize+1];
         };
 
         ~mfilebuf()

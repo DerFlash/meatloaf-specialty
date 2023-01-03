@@ -5,23 +5,21 @@
  * 
  * A buffer for writing IEC data, handles sending EOI
  ********************************************************/
-
-size_t oiecstream::easyWrite(bool lastOne) {
+size_t oiecstream::easyWrite() {
     size_t written = 0;
 
     // we're always writing without the last character in buffer just to be able to send this special delay
     // if this is last character in the file
-    auto lastCharPos = (lastOne) ? pptr()-1 : pptr();
-    auto count = pptr()-pbase() + 1;
-    Debug_printv("IEC easyWrite will try to send %d bytes over IEC (but buffer contains %d), lastOne=%d", count-1, count, lastOne);
+
+    Debug_printv("IEC easyWrite will try to send %d bytes over IEC", pptr()-pbase());
 
     //  pptr =  Returns the pointer to the current character (put pointer) in the put area.
     //  pbase = Returns the pointer to the beginning ("base") of the put area.
     //  epptr = Returns the pointer one past the end of the put area.
-    for(auto b = pbase(); b < lastCharPos; b++) {
-        Serial.printf("%c",*b);
-        bool sendSuccess = m_iec->send(*b);
-        //bool sendSuccess = true;
+    for(auto b = pbase(); b < pptr(); b++) {
+        Serial.printf("%c [%.2X] ",*b, *b);
+        //bool sendSuccess = m_iec->send(*b);
+        bool sendSuccess = true;
         if(sendSuccess && !(IEC.protocol->flags bitand ATN_PULLED) ) written++;
         else if(!sendSuccess) {
             // what should happen here?
@@ -37,23 +35,15 @@ size_t oiecstream::easyWrite(bool lastOne) {
         }
     }
 
-    char lastChar = *(lastCharPos);
     
-    if(!lastOne && !eof()) {
-        // probably more bytes to come, so
-        // here we wrote all buffer chars but the last one.
-        // we will take this last byte, put it at position 0 and set pptr to 1
-        data[0] = lastChar; // let's put it at position 0
-        setp(data, data+IEC_BUFFER_SIZE); // reset the beginning and ending buffer pointers
-        pbump(1); // and set pptr to 1 to tell there's 1 byte in our buffer
-        Debug_printv("IEC easyWrite copied last char from previous buff to the start of new buffer: %c [%.2X]", data[0]);
-    }
-    else {
-        // ok, so we have last character, signal it
-        Debug_printv("IEC easyWrite writes THE LAST ONE with EOI: %c [%.2X]", lastChar);
-        m_iec->sendEOI(lastChar);
-        setp(data, data+IEC_BUFFER_SIZE);
-    }
+    // probably more bytes to come, so
+    // here we wrote all buffer chars but the last one.
+    // we will take this last byte, put it at position 0 and set pptr to 1
+    char lastChar = *(pbase()+written);
+    setp(data, data+IEC_BUFFER_SIZE); // reset the beginning and ending buffer pointers
+    pbump(1); // and set pptr to 1 to tell there's 1 byte in our buffer
+    data[0] = lastChar; // let's put it at position 0
+    Debug_printv("wtirren %d, last char ---> [%.2X]\n", written, data[0]);
 
     return written;
 }
@@ -65,7 +55,7 @@ int oiecstream::overflow(int ch) {
         *end ++ = ch;
     }
 
-    auto written = easyWrite(false);
+    size_t written = easyWrite();
 
     if ( written == 0 ) {
         ch = EOF;
@@ -77,13 +67,13 @@ int oiecstream::overflow(int ch) {
 };
 
 int oiecstream::sync() { 
-    if(pptr() == pbase()) {
-        Debug_printv("sync for iec called - no more data");
+    if(pptr()-pbase() <= 1) {
+        Debug_printv("sync for iec called - nothing more to write");
         return 0;
     }
     else {
-        Debug_printv("sync for iec called - will write last remaining char if available");
-        auto result = easyWrite(true); 
+        Debug_printv("sync for iec called - flushing");
+        auto result = easyWrite(); 
         return (result != 0) ? 0 : -1;  
     }  
 };
