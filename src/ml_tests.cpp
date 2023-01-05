@@ -280,9 +280,21 @@ void iecbuffertest() {
         oiecstream iecStream;
         iecStream.open(&IEC);
 
-        for(int i = 0; i<95; i++) {
-		    nextChar=str[i];
-		    iecStream.write(&nextChar, 1);
+        // for(int i = 0; i<91; i++) {
+		//     nextChar=str[i];
+		//     iecStream.write(&nextChar, 1);
+        // }
+        
+        //Meat::iostream url("http://c64.meatloaf.cc/fb64.prg");
+        Meat::iostream url("http://c64.meatloaf.cc/ssuukk.txt");
+        while(!url.eof()) {
+            url.read(&nextChar, 1);
+            if(!url.eof()) {
+                Serial.printf("%c",nextChar);
+                //Serial.printf("%.2X ",nextChar);
+                //Serial.printf("s:%c[%.2X]",nextChar, nextChar);
+                iecStream.write(&nextChar, 1);
+            }
         }
 
         iecStream.close();

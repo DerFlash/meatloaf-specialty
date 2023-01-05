@@ -8,6 +8,12 @@
 size_t oiecstream::easyWrite() {
     size_t written = 0;
 
+    Serial.printf("buff     :");
+    for(auto i = pbase(); i<pptr(); i++) {
+        Serial.printf("%c",*i);
+    }
+    Debug_printv("\n");
+
     // we're always writing without the last character in buffer just to be able to send this special delay
     // if this is last character in the file
 
@@ -16,8 +22,10 @@ size_t oiecstream::easyWrite() {
     //  pptr =  Returns the pointer to the current character (put pointer) in the put area.
     //  pbase = Returns the pointer to the beginning ("base") of the put area.
     //  epptr = Returns the pointer one past the end of the put area.
-    for(auto b = pbase(); b < pptr(); b++) {
-        Serial.printf("%c [%.2X] ",*b, *b);
+    Serial.printf("buff->IEC:");
+    for(auto b = pbase(); b < pptr()-1; b++) {
+        Serial.printf("%c",*b);
+        //Serial.printf("%c[%.2X]",*b, *b);
         //bool sendSuccess = m_iec->send(*b);
         bool sendSuccess = true;
         if(sendSuccess && !(IEC.protocol->flags bitand ATN_PULLED) ) written++;
@@ -26,11 +34,13 @@ size_t oiecstream::easyWrite() {
             // should the badbit be set when send returns false?
             setstate(badbit);
             setp(data+written, data+IEC_BUFFER_SIZE); // set pbase to point to next unwritten char
+            Debug_printv("IEC acknowledged %d bytes, then failed\n", written);
             return written;
         }
         else {
             // ATN was pulled
             setp(data+written, data+IEC_BUFFER_SIZE); // set pbase to point to next unwritten char
+            Debug_printv("IEC acknowledged %d bytes, then ATN was pulled\n", written);
             return written;
         }
     }
@@ -43,15 +53,22 @@ size_t oiecstream::easyWrite() {
     setp(data, data+IEC_BUFFER_SIZE); // reset the beginning and ending buffer pointers
     pbump(1); // and set pptr to 1 to tell there's 1 byte in our buffer
     data[0] = lastChar; // let's put it at position 0
-    Debug_printv("wtirren %d, last char ---> [%.2X]\n", written, data[0]);
+    Debug_printv("---> LAST [%c]\n", data[0]);
+    Debug_printv("IEC acknowledged %d bytes\n", written);
 
     return written;
 }
 
 int oiecstream::overflow(int ch) {
-    Debug_printv("overflow for iec called");
+    if (!is_open())
+    {
+        return EOF;
+    }
+
+    Debug_printv("overflow for iec called, size=%d", pptr()-pbase());
     char* end = pptr();
     if ( ch != EOF ) {
+        pbump(1);
         *end ++ = ch;
     }
 
@@ -72,7 +89,7 @@ int oiecstream::sync() {
         return 0;
     }
     else {
-        Debug_printv("sync for iec called - flushing");
+        Debug_printv("sync for iec called - buffer contains %d bytes", pptr()-pbase());
         auto result = easyWrite(); 
         return (result != 0) ? 0 : -1;  
     }  

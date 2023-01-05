@@ -994,7 +994,7 @@ bool iecDrive::sendFile()
 			// OK, Jaimme. So you told me there's a way to signal "no data available on IEC", here's the place
 			// to send it:
 		}
-		else
+		else if(!(*istream).eof())
 			iecStream.write(&nextChar, 1);
 
 		// Toggle LED

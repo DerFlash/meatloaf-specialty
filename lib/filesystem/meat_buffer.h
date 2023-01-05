@@ -162,6 +162,7 @@ namespace Meat
 
         int underflow() override
         {
+
             if (!is_open())
             {
                 return std::char_traits<char>::eof();
@@ -172,22 +173,24 @@ namespace Meat
                 // no more characters are available, size == 0.
                 // auto buffer = reader->read();
 
-                // Debug_printv("--mfilebuf underflow, calling read!");
-
                 int readCount = mstream->read((uint8_t *)ibuffer, ibufsize);
 
+                Debug_printv("meat buffer underflow, readCount=%d", readCount);
+
+                // beg, curr, end <=> eback, gptr, egptr
                 if (readCount == _MEAT_NO_DATA_AVAIL)
                 {
                     // if gptr >= egptr - sgetc will call underflow again:
                     //                   gptr     egptr
                     Debug_printv("meat underflow received _MEAT_NO_DATA_AVAIL!");
-                    this->setg(ibuffer, ibuffer, ibuffer); // beg, curr, end <=> eback, gptr, egptr
+                    //this->setg(ibuffer, ibuffer, ibuffer); 
+
                     return my_char_traits::nda();
                 }
-                else if (readCount < 0)
+                else if (readCount <= 0)
                 {
-                    Debug_printv("--mfilebuf different read error, RC=%d!", readCount);
-                    this->setg(ibuffer, ibuffer, ibuffer);
+                    Debug_printv("--mfilebuf read error or EOF, RC=%d!", readCount);
+                    //this->setg(ibuffer, ibuffer, ibuffer);
                     return std::char_traits<char>::eof();
                 }
                 else
@@ -196,7 +199,7 @@ namespace Meat
                     currBuffStart = currBuffEnd - readCount; // this is where our buffer data starts
 
                     // Debug_printv("--mfilebuf underflow, read bytes=%d--", readCount);
-
+                    // beg, curr, end <=> eback, gptr, egptr
                     this->setg(ibuffer, ibuffer, ibuffer + readCount);
                 }
             }
@@ -252,6 +255,7 @@ namespace Meat
             if (ch != EOF)
             {
                 *end++ = ch;
+                this->pbump(1);
             }
 
             Debug_printv("%d bytes in buffer will be written", end - this->pbase());
