@@ -290,7 +290,7 @@ void iecbuffertest() {
         while(!url.eof()) {
             url.read(&nextChar, 1);
             if(!url.eof()) {
-                Serial.printf("%c",nextChar);
+                //Serial.printf("%c",nextChar);
                 //Serial.printf("%.2X ",nextChar);
                 //Serial.printf("s:%c[%.2X]",nextChar, nextChar);
                 iecStream.write(&nextChar, 1);
