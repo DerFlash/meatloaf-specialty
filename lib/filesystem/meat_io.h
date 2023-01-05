@@ -17,7 +17,7 @@
 
 #define _MEAT_NO_DATA_AVAIL 1L << 8
 
-static const uint32_t ndabit = _MEAT_NO_DATA_AVAIL;
+static const std::ios_base::io_state ndabit = _MEAT_NO_DATA_AVAIL;
 
 /********************************************************
  * Universal file

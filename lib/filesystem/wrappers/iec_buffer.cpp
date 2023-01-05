@@ -8,16 +8,16 @@
 size_t oiecstream::easyWrite() {
     size_t written = 0;
 
-    Serial.printf("buff     :");
-    for(auto i = pbase(); i<pptr(); i++) {
-        Serial.printf("%c",*i);
-    }
-    Debug_printv("\n");
+    // Serial.printf("buff     :");
+    // for(auto i = pbase(); i<pptr(); i++) {
+    //     Serial.printf("%c",*i);
+    // }
+    // Debug_printv("\n");
 
     // we're always writing without the last character in buffer just to be able to send this special delay
     // if this is last character in the file
 
-    Debug_printv("IEC easyWrite will try to send %d bytes over IEC", pptr()-pbase());
+    //Debug_printv("IEC easyWrite will try to send %d bytes over IEC", pptr()-pbase());
 
     //  pptr =  Returns the pointer to the current character (put pointer) in the put area.
     //  pbase = Returns the pointer to the beginning ("base") of the put area.
