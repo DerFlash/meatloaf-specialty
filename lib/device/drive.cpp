@@ -983,7 +983,7 @@ bool iecDrive::sendFile()
 	// 	}
 
 	// Debug_printf("sendFile: [$%.4X]\r\n=================================\r\n", load_address);
-	Debug_printv("peek[%d] istream[%d] iecstream[%d] lastbyte[%d]", istream->peek(), istream->bad(), iecStream.bad());
+	Debug_printv("peek[%d] istream[%d] iecstream[%d]", istream->peek(), istream->bad(), iecStream.bad());
 	while( !istream->eof() && istream->bad() == 0 && iecStream.bad() == 0 )
 	{
 		char nextChar;
