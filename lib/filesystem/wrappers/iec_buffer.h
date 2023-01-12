@@ -12,7 +12,7 @@
 #include <memory>
 #include "U8Char.h"
 
-#define IEC_BUFFER_SIZE 100 // 1024
+#define IEC_BUFFER_SIZE 255 // 1024
 
 /********************************************************
  * oiecstream
@@ -65,7 +65,7 @@ public:
         if(pptr()-pbase() == 1) {
             char last = data[0];
             Debug_printv("closing, sending EOI with [%.2X] %c", last, last);
-            //m_iec->sendEOI(0);
+            m_iec->sendEOI(last);
             setp(data, data+IEC_BUFFER_SIZE);
         }
 

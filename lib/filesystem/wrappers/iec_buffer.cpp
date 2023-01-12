@@ -24,10 +24,10 @@ size_t oiecstream::easyWrite() {
     //  epptr = Returns the pointer one past the end of the put area.
     Serial.printf("buff->IEC:");
     for(auto b = pbase(); b < pptr()-1; b++) {
-        Serial.printf("%c",*b);
+        //Serial.printf("%c",*b);
         //Serial.printf("%c[%.2X]",*b, *b);
-        //bool sendSuccess = m_iec->send(*b);
-        bool sendSuccess = true;
+        bool sendSuccess = m_iec->send(*b);
+        //bool sendSuccess = true;
         if(sendSuccess && !(IEC.protocol->flags bitand ATN_PULLED) ) written++;
         else if(!sendSuccess) {
             // what should happen here?
@@ -53,7 +53,7 @@ size_t oiecstream::easyWrite() {
     setp(data, data+IEC_BUFFER_SIZE); // reset the beginning and ending buffer pointers
     pbump(1); // and set pptr to 1 to tell there's 1 byte in our buffer
     data[0] = lastChar; // let's put it at position 0
-    Debug_printv("---> LAST [%c]\n", data[0]);
+    Debug_printv("---> LAST [%.2X]\n", data[0]);
     Debug_printv("IEC acknowledged %d bytes\n", written);
 
     return written;
