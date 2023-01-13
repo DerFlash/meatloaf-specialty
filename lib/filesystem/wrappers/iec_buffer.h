@@ -20,7 +20,7 @@
  * Standard C++ stream for writing to IEC
  ********************************************************/
 
-class oiecstream : private std::filebuf, public std::ostream {
+class oiecstream : private std::filebuf, public std::iostream {
     char* data;
     iecBus* m_iec;
     bool m_isOpen = false;
@@ -28,11 +28,11 @@ class oiecstream : private std::filebuf, public std::ostream {
     size_t easyWrite();
 
 public:
-    oiecstream(const oiecstream &copied) : std::ios(0), std::filebuf(),  std::ostream( this ) {
+    oiecstream(const oiecstream &copied) : std::ios(0), std::filebuf(),  std::iostream( this ) {
         Debug_printv("oiecstream COPY constructor");
     }
 
-    oiecstream() : std::ostream( this ) {
+    oiecstream() : std::iostream( this ) {
         Debug_printv("oiecstream constructor");
 
         data = new char[IEC_BUFFER_SIZE+1];
@@ -60,6 +60,9 @@ public:
     }
 
     virtual void close() {
+        if(!m_isOpen)
+            return;
+
         sync();
 
         if(pptr()-pbase() == 1) {
@@ -78,8 +81,13 @@ public:
 
     int overflow(int ch  = std::filebuf::traits_type::eof()) override;
 
+    int underflow() override;
+
     int sync() override;
 
+    void flushpbuff() {
+        setp(data, data+IEC_BUFFER_SIZE);
+    }
 
     void putUtf8(U8Char* codePoint);
 };

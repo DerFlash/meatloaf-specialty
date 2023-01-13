@@ -59,7 +59,28 @@ size_t oiecstream::easyWrite() {
     return written;
 }
 
+int oiecstream::underflow() {
+    // here we run out of bytes to save to remote file, we have to ask IEC for the next byte
+
+    if(IEC.protocol->flags bitand ATN_PULLED) {
+        // ATN was just pulled, we won't get anything now, let's send NDA to tell our code we can't read from IEC
+        this->setstate((std::ios_base::iostate)ndabit);
+        return ndabit;
+    }
+    else {
+        int16_t byteToSave = m_iec->receive(); // -1 == error
+        if(byteToSave == -1) {
+            this->setstate(std::ios_base::iostate::_S_eofbit);
+            return EOF;
+        }
+        else {
+            return byteToSave;
+        }
+    }
+}
+
 int oiecstream::overflow(int ch) {
+
     if (!is_open())
     {
         return EOF;
