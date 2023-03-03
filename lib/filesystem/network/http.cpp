@@ -371,6 +371,15 @@ int MeatHttpClient::openAndFetchHeaders(esp_http_client_method_t meth, int resum
         esp_http_client_set_header(m_http, "range", str);
     }
 
+    // OK, how to add more headers?
+    // my idea is if you send a command like this on channel 15 (or any other exclusive channel) like this:
+    // print#1,8,15,"H+:CONTENT-TYPE: APPLICATION/JSON"
+    // this command will be recognized and stored within an array in this particular IEC unit (8)
+    // then here we will query this array to see if it has a "H+" commmand
+    // if it has then we will call another esp_http_client_set_header here
+    // similarly - if we find a "H-" command on the list, we will call esp_http_client_delete_header
+    // the question of course is - how do we get IEC device in context of this very class :D
+
     Debug_printv("--- PRE OPEN");
 
     esp_err_t initOk = esp_http_client_open(m_http, 0); // or open? It's not entirely clear...
