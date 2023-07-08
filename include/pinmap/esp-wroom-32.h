@@ -40,17 +40,6 @@
 #define PIN_LED_BT 5 // LOLIN D32 PRO
 #endif
 
-/* LED Strip */
-#define CONFIG_GPIO_NUM 27
-#define CONFIG_RMT_CHANNEL 0 // 0-7
-#define CONFIG_RGB_LED_TYPE 0 // 0=WS2812, 1=SK6812, 2=APA106
-#define CONFIG_LED_STRIP_LENGTH 5
-
-#define CONFIG_LED_PIN 27
-#define CONFIG_LED_COUNT 20
-#define CONFIG_DEFAULT_EFFECT_COMMAND "rainbow"
-#define CONFIG_FRAME_DELAY 5000
-
 
 /* Audio Output */
 #define PIN_DAC1 25 // samlib.h
@@ -93,6 +82,7 @@
 #define PIN_IEC_DATA_IN    	GPIO_NUM_25
 #define PIN_IEC_DATA_OUT   	GPIO_NUM_25
 #define PIN_IEC_SRQ			GPIO_NUM_26
+// GND - Be sure to connect GND of the IEC cable to GND on the ESP module
 
 /* Modem/Parallel Switch */
 #define PIN_MDMPAR_SW1       2  // High = Modem enabled

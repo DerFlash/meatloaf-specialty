@@ -15,10 +15,19 @@ platformio.ini
 platformio-device-monitor-*.log
 
 # ESP-IDF SDK configuration file
-sdkconfig.*
 include/ssid.h
 /*.log
 **/.backup
 .travis.yml
 compile_commands.json
 .reference/*
+data/BUILD_IEC/config.ini
+data/BUILD_IEC/.sys/rom/*
+lib/bus/iec/iec.cpp
+\!archive/*
+dependencies.lock
+firmware/*.bin
+lib/device/disk.h
+lib/device/iec/fuji.*
+lib/device/iec/disk.*
+firmware/Adafruit ESPTool.webloc

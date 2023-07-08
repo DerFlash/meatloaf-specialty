@@ -44,13 +44,6 @@
 #define PIN_LED_BT 5 // LOLIN D32 PRO
 #endif
 
-/* LED Strip */
-#define NUM_LEDS 5
-#define DATA_PIN 5
-#define BRIGHTNESS  25
-#define LED_TYPE WS2811
-#define COLOR_ORDER RGB
-
 /* Audio Output */
 #define PIN_DAC1 25 // samlib.h
 
@@ -84,6 +77,7 @@
 #define PIN_IEC_DATA_IN     GPIO_NUM_33      // SIO 5  - DO   - Data Output
 #define PIN_IEC_DATA_OUT    GPIO_NUM_21      // SIO 3  - DI   - Data Input
 #endif
+// GND - Be sure to connect GND of the IEC cable to GND on the ESP module
 
 
 /* Modem/Parallel Switch */

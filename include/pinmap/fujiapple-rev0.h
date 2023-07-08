@@ -31,15 +31,6 @@
 #define PIN_LED_BUS 12 // 4 FN
 #define PIN_LED_BT -1 // No BT LED
 
-/* LED Strip NEW */
-#define NUM_LEDS 3
-#define DATA_PIN_1 27 
-//#define DATA_PIN_2 13 // pick unused gpio
-#define BRIGHTNESS  25
-#define LED_TYPE    WS2811
-#define COLOR_ORDER RGB
-
-
 /* Audio Output */
 #define PIN_DAC1 25 // samlib.h
 
@@ -60,6 +51,7 @@
 #define PIN_IEC_DATA_IN    	GPIO_NUM_32
 #define PIN_IEC_DATA_OUT   	GPIO_NUM_32
 #define PIN_IEC_SRQ			GPIO_NUM_26
+// GND - Be sure to connect GND of the IEC cable to GND on the ESP module
 
 
 /* Modem/Parallel Switch */
