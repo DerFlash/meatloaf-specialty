@@ -145,6 +145,8 @@ private:
 
 class ArchiveContainerFile: public MFile
 {
+    struct archive *a = nullptr;
+
 public:
     ArchiveContainerFile(std::string path) : MFile(path) {};
 
@@ -159,13 +161,59 @@ public:
     // these might fall back to proper methods in parent filesystem:
     time_t getLastWrite() override ;
     time_t getCreationTime() override ;
-    bool rewindDirectory() override ;
-    MFile* getNextFileInDir() override ;
+    bool rewindDirectory() override {
+        if(a != nullptr)
+            archive_read_free(a);
+            
+        return prepareDirListing();
+    }
+
+    MFile* getNextFileInDir() override {
+        struct archive_entry *entry;
+
+        if(a == nullptr) {
+            prepareDirListing();
+        }
+
+        if(a != nullptr) {
+            if(archive_read_next_header(a, &entry) == ARCHIVE_OK) {
+                auto newFile = MFSOwner::File(archive_entry_pathname(entry));
+                // TODO - we can probably fill newFile with some info that is
+                // probably available in archive_entry structure!
+                return newFile;
+            }
+            else {
+                archive_read_free(a);
+                a = nullptr;
+                return nullptr;
+            }
+        }
+        else {            
+            return nullptr;
+        }
+    }
+
     bool mkDir() override ;
     bool exists() override ;
     size_t size() override ;
     bool remove() override ;
     bool rename(std::string dest);
+
+private:
+    bool prepareDirListing() {
+        a = archive_read_new();
+        archive_read_support_filter_all(a);
+        archive_read_support_format_all(a);
+        int r = archive_read_open2(a, srcStr, NULL, myread, myskip, myclose);
+        if (r == ARCHIVE_OK) {
+            return true;
+        }
+        else {
+            archive_read_free(a);
+            a = nullptr;
+            return false;
+        }
+    }
 };
 
 

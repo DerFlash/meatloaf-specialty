@@ -84,6 +84,15 @@ public:
     virtual MFile* cd(std::string newDir);
     virtual bool isDirectory() = 0;
     virtual bool rewindDirectory() = 0 ;
+    /**
+     * Get next file in directory
+     * 
+     * Get next file from the directory (if applicable). Has to provide any
+     * setup code so this can be called without rewindDirectory.
+     * 
+     * @see rewindDirectory()
+     * @return next file or nullptr if no more files
+    */
     virtual MFile* getNextFileInDir() = 0 ;
     virtual bool mkDir() = 0 ;    
 
