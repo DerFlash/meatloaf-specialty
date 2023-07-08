@@ -151,7 +151,7 @@ private:
     {
         if(is_open) {
             bool rc = srcStr->seek(request, SEEK_CUR);
-            return (rc) ? request : ARCHIVE_FATAL;
+            return (rc) ? request : ARCHIVE_WARN;
         }
         else {
             return ARCHIVE_FATAL;
@@ -201,6 +201,8 @@ public:
                 auto newFile = MFSOwner::File(archive_entry_pathname(entry));
                 // TODO - we can probably fill newFile with some info that is
                 // probably available in archive_entry structure!
+                newFile->setSize(entry.size); // etc.
+
                 return newFile;
             }
             else {
