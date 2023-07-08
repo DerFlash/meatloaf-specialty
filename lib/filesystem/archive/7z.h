@@ -31,6 +31,18 @@ public:
     size_t read(uint8_t* buf, size_t size) override;
     bool isOpen() override;
 
+    // For files with a browsable random access directory structure
+    // d64, d74, d81, dnp, etc.
+    virtual bool seekPath(std::string path) {
+        return false;
+    };
+
+    // For files with no directory structure
+    // tap, crt, tar
+    virtual std::string seekNextEntry() {
+        return "";
+    };
+
 protected:
     MStream* srcStr;
 
