@@ -41,7 +41,7 @@ MStream* HttpFile::meatStream() {
 }
 
 MStream* HttpFile::createIStream(std::shared_ptr<MStream> is) {
-    return is.get(); // DUMMY return value - we've overriden istreamfunction, so this one won't be used
+    return is.get(); // DUMMY return value - we've overriden meatStream, so this one won't be used
 }
 
 time_t HttpFile::getLastWrite() {

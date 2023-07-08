@@ -62,6 +62,23 @@ public:
     }
 
     // has to return OPENED stream
+    /**
+     * The main matrioszka-stream magic happens here.
+     *
+     * This function needs to be overriden ONLY for "root" filesystems, meaning
+     * such file systems that can't be contained in another filesystem, like
+     * /, http:, ftp: and so on. For all other cases KEEP THE DEFAULT IMPLEMENTATION
+     * which should be smart enough for most cases.
+     * 
+     * I repeat: DO NOT OVERRIDE THIS FUNCTION unless you're creating a FS that
+     * can't be contained in another. Use createIStream() instead.
+     *
+     * @see createIStream()
+     * @return already open stream for reading this particular file, i.e. if this
+     * is a file inside some image or archive, the next byte read will be the first
+     * byte of selected file inside the image, NOT the first byte of the image
+     *              
+     */
     virtual MStream* meatStream();
 
     virtual MFile* cd(std::string newDir);
@@ -86,6 +103,24 @@ public:
     std::string pathInStream;
 
 protected:
+    /**
+     * Return a specialized stream of data for this particular path
+     * 
+     * This is the function you need to override to provide a specific byte
+     * stream for this particular file type. Note this method is called ONLY
+     * by the default implementation of meatStream method, so if you have
+     * overriden that one, you probably don't need to override this!
+     * 
+     * Let's say you want to implement a browsable D64 stream. The source D64
+     * file might lie inside any other file sytem (HTTP, FTP, ZIP, local...)
+     * and its bytes are provided by stream passed in src param.
+     * So this is the place where you will return a smart stream that can
+     * be used for seeking or skipping inside the D64 image.
+     * 
+     * @see meatStream()
+     * @param src raw bytes of this container
+     * @return specialized stream that handles this particular file/container
+    */
     virtual MStream* createIStream(std::shared_ptr<MStream> src) = 0;
     bool m_isNull;
 
