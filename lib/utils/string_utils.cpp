@@ -177,6 +177,12 @@ namespace mstr {
         return ( it != s1.end() );
     }
 
+    bool compare(std::string &s1, const char *s2, bool case_sensitive)
+    {
+        std::string s = s2;
+        return compare(s1, s, case_sensitive);
+    }
+
     bool compare(std::string &s1, std::string &s2, bool case_sensitive)
     {
         unsigned int index;

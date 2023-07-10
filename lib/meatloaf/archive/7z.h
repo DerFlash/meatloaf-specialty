@@ -10,6 +10,7 @@
 
 #include <archive.h>
 #include <archive_entry.h>
+
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,7 +29,7 @@ class ArchiveStream: MStream {
     MStream* srcStream = nullptr; // a stream that is able to serve bytes of this archive
     size_t buffSize = 4096;
     uint8_t* srcBuffer = nullptr;
-    size_t position = 0;
+    uint32_t _position = 0;
 
 public:
 
@@ -68,11 +69,11 @@ public:
         return is_open;
     };
 
-    size_t read(uint8_t* buf, size_t size) override {
+    uint32_t read(uint8_t* buf, uint32_t size) override {
         // ok so here we will basically need to refill buff with consecutive
         // calls to srcStream.read, I assume buf is filled by myread callback
         size_t r = archive_read_data(a, buf, size); // calls myread?
-        position += r;
+        _position += r;
         return r;
     }
 
@@ -81,7 +82,7 @@ public:
     bool seekPath(std::string path) override {
         struct archive_entry *entry;
         while (archive_read_next_header(a, &entry) == ARCHIVE_OK) {
-            if(stringcompare(path, archive_entry_pathname(entry)))
+            if(mstr::compare(path, archive_entry_pathname(entry)))
                 return true;
         }
         return false;
@@ -97,13 +98,13 @@ public:
             return "";
     };
 
-    size_t position() {
-        return position;
+    uint32_t position() {
+        return _position;
     }
 
     // no idea how to implement...
-    size_t available() {
-        return MAX_INT; // whatever...
+    uint32_t available() {
+        return 0; // whatever...
     }
 
 protected:
@@ -201,7 +202,7 @@ public:
                 auto newFile = MFSOwner::File(archive_entry_pathname(entry));
                 // TODO - we can probably fill newFile with some info that is
                 // probably available in archive_entry structure!
-                newFile->setSize(entry.size); // etc.
+                newFile->size(entry->size); // etc.
 
                 return newFile;
             }

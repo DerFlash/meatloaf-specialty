@@ -253,4 +253,14 @@
 #define ARCHIVE_CRYPTO_SHA1_MBEDTLS 1
 #define ARCHIVE_CRYPTO_SHA256_MBEDTLS 1
 
+#define mbedtls_md5_starts mbedtls_md5_starts_ret
+#define mbedtls_md5_update mbedtls_md5_update_ret
+#define mbedtls_md5_finish mbedtls_md5_finish_ret
+#define mbedtls_sha1_starts mbedtls_sha1_starts_ret
+#define mbedtls_sha1_update mbedtls_sha1_update_ret
+#define mbedtls_sha1_finish mbedtls_sha1_finish_ret
+#define mbedtls_sha256_starts mbedtls_sha256_starts_ret
+#define mbedtls_sha256_update mbedtls_sha256_update_ret
+#define mbedtls_sha256_finish mbedtls_sha256_finish_ret
+
 #define SSIZE_MAX SIZE_MAX

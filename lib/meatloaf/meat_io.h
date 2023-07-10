@@ -102,6 +102,7 @@ public:
     virtual time_t getLastWrite() = 0 ;
     virtual time_t getCreationTime() = 0 ;
     virtual uint32_t size() = 0;
+    virtual void size(uint32_t value) {};
     virtual uint64_t getAvailableSpace();
 
     virtual bool isText() {
