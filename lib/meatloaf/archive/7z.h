@@ -192,9 +192,17 @@ private:
 class ArchiveContainerFile: public MFile
 {
     struct archive *a = nullptr;
+    std::shared_ptr<MStream> dirStream = nullptr; // a stream that is able to serve bytes of this archive
+
 
 public:
     ArchiveContainerFile(std::string path) : MFile(path) {};
+
+    ~ArchiveContainerFile() {
+        if(dirStream.get() != nullptr) {
+            dirStream->close();
+        }
+    }
 
     MStream* createIStream(std::shared_ptr<MStream> containerIstream) {
         return new ArchiveStream(containerIstream);
@@ -249,10 +257,15 @@ public:
 
 private:
     bool prepareDirListing() {
+        if(dirStream.get() != nullptr) {
+            dirStream->close();
+        }
+
+        //dirStream = TODO create a stream for this path
         a = archive_read_new();
         archive_read_support_filter_all(a);
         archive_read_support_format_all(a);
-        int r = archive_read_open2(a, srcStr, NULL, myRead, myskip, myclose);
+        int r = archive_read_open2(a, dirStream.get(), NULL, myRead, myskip, myclose);
         if (r == ARCHIVE_OK) {
             return true;
         }
