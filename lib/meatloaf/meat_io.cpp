@@ -16,7 +16,7 @@
 //#include "wrappers/directory_stream.h"
 
 // Archive
-#include "archive/zip.h"
+#include "archive/7z.h"
 
 // Cartridge
 
@@ -73,6 +73,9 @@ TNFSFileSystem tnfsFS;
 
 //WSFileSystem wsFS;
 
+// Archive
+ArchiveContainerFileSystem archiveFS;
+
 // File
 P00FileSystem p00FS;
 
@@ -102,6 +105,7 @@ std::vector<MFileSystem*> MFSOwner::availableFS {
 #ifdef SD_CARD
     &sdFS,
 #endif
+    &archiveFS,
     &p00FS,
     &d64FS, &d71FS, &d80FS, &d81FS, &d82FS, &dnpFS,
     &d8bFS, &dfiFS,
