@@ -158,30 +158,29 @@ public:
         return _position;
     }
 
-    // no idea how to implement...
+    // STREAM HAS NO IDEA HOW MUCH IS AVALABLE - IT'S ENDLESS!
     uint32_t available() {
         return 0; // whatever...
     }
 
+    // STREAM HAS NO IDEA ABOUT SIZE - IT'S ENDLESS!
     virtual uint32_t size() override {
         return -1;
     }
 
+    // WHAT DOES THIS FUNCTION DO???
     virtual size_t error() override {
-        // huh???
         return -1;
     }
 
     virtual bool seek(uint32_t pos) override {
-        return false;
+        return srcStream->seek(pos);
     }
 
 protected:
     std::shared_ptr<MStream> srcStream = nullptr; // a stream that is able to serve bytes of this archive
 
 private:
-
-
 
 };
 
@@ -201,12 +200,11 @@ public:
         return new ArchiveStream(containerIstream);
     }
 
+    // archive file is always a directory
     bool isDirectory() {
         return true;
     };
 
-    time_t getLastWrite() override ;
-    time_t getCreationTime() override ;
     bool rewindDirectory() override {
         if(a != nullptr)
             archive_read_free(a);
@@ -226,7 +224,7 @@ public:
                 auto newFile = MFSOwner::File(archive_entry_pathname(entry));
                 // TODO - we can probably fill newFile with some info that is
                 // probably available in archive_entry structure!
-                newFile->size(entry->ae_stat.aest_size); // etc.
+                newFile->size(archive_entry_size(entry)); // etc.
 
                 return newFile;
             }
@@ -246,6 +244,8 @@ public:
     uint32_t size() override ;
     bool remove() override ;
     bool rename(std::string dest);
+    time_t getLastWrite() override ;
+    time_t getCreationTime() override ;
 
 private:
     bool prepareDirListing() {
