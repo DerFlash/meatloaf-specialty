@@ -102,7 +102,7 @@ public:
         if(!is_open) {
             // callbacks set here:
             //                                    open, read  , skip,   close
-            int r = archive_read_open2(a, srcStream, NULL, myRead, myskip, myclose);
+            int r = archive_read_open2(a, srcStream.get(), NULL, myRead, myskip, myclose);
             if (r == ARCHIVE_OK)
                 is_open = true;
         }
