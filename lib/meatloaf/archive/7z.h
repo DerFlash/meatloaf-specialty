@@ -4,9 +4,6 @@
 #ifndef MEATLOAF_ARCHIVE_7Z
 #define MEATLOAF_ARCHIVE_7Z
 
-#include "meat_io.h"
-#include "archive.h"
-
 #include <sys/types.h>
 
 #include <sys/stat.h>
@@ -19,6 +16,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "meat_io.h"
+
 /********************************************************
  * Streams implementations
  ********************************************************/
@@ -28,7 +27,7 @@ class ArchiveStream: MStream {
     bool is_open = false;
     MStream* srcStream = nullptr; // a stream that is able to serve bytes of this archive
     size_t buffSize = 4096;
-    uint8_t* srcBuffer;
+    uint8_t* srcBuffer = nullptr;
     size_t position = 0;
 
 public:
@@ -38,10 +37,13 @@ public:
         a = archive_read_new();
         archive_read_support_filter_all(a);
         archive_read_support_format_all(a);
+        srcBuffer = new uint8_t[buffSize];
     }
 
     ~ArchiveStream() {
         close();
+        if(srcBuffer != nullptr)
+            delete[] srcBuffer;
     }
 
     bool open() override {
@@ -111,13 +113,19 @@ private:
     // TODO: check how we can use archive_seek_callback, archive_passphrase_callback etc. to our benefit!
 
     /* Returns pointer and size of next block of data from archive. */
+    // The read callback returns the number of bytes read, zero for end-of-file, or a negative failure code as above. 
+    // It also returns a pointer to the block of data read.
     ssize_t myread(struct archive *a, void *__src_stream, const void **buff)
     {
         //MStream *src_str = __src_stream; // no need, we have it as a field
 
-        // how the hell do we know how big is the buffer???
-        *buff = mydata->buff;
-        return (read(mydata->fd, mydata->buff, 10240));
+        // OK, so:
+        // 1. we have to call srcStr.read(...)
+        // 2. set *buff to the bufer read in 1.
+        // 3. return read bytes count
+
+        *buff = srcBuffer;
+        return srcStr->read(srcBuffer, buffSize);
     }
 
     int myclose(struct archive *a, void *__src_stream)
@@ -143,10 +151,10 @@ private:
     {
         if(is_open) {
             bool rc = srcStr->seek(request, SEEK_CUR);
-            return (rc) ? request : -1;
+            return (rc) ? request : ARCHIVE_WARN;
         }
         else {
-            return -1;
+            return ARCHIVE_FATAL;
         }
     }
 
@@ -172,7 +180,6 @@ public:
         return true;
     };
 
-    // these might fall back to proper methods in parent filesystem:
     time_t getLastWrite() override ;
     time_t getCreationTime() override ;
     bool rewindDirectory() override {
@@ -194,6 +201,8 @@ public:
                 auto newFile = MFSOwner::File(archive_entry_pathname(entry));
                 // TODO - we can probably fill newFile with some info that is
                 // probably available in archive_entry structure!
+                newFile->setSize(entry.size); // etc.
+
                 return newFile;
             }
             else {
@@ -248,21 +257,24 @@ public:
 
     bool handles(std::string fileName) {
         
-        return (
-            mstr::endsWith(fileName, ".7z", false)
-            || mstr::endsWith(fileName, ".arc", false)
-            || mstr::endsWith(fileName, ".ark", false)
-            || mstr::endsWith(fileName, ".bz2", false)
-            || mstr::endsWith(fileName, ".gz", false)
-            || mstr::endsWith(fileName, ".lha", false)
-            || mstr::endsWith(fileName, ".lzh", false)
-            || mstr::endsWith(fileName, ".lzx", false)
-            || mstr::endsWith(fileName, ".rar", false)
-            || mstr::endsWith(fileName, ".tar", false)
-            || mstr::endsWith(fileName, ".tgz", false)
-            || mstr::endsWith(fileName, ".xar", false)
-            || mstr::endsWith(fileName, ".zip", false)
-            );
+        return byExtension(
+            {
+                ".7z",
+                ".arc",
+                ".ark",
+                ".bz2",
+                ".gz",
+                ".lha",
+                ".lzh",
+                ".lzx",
+                ".rar",
+                ".tar",
+                ".tgz",
+                ".xar",
+                ".zip"
+            }, 
+            fileName
+        );
     }
 
 private:
