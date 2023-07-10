@@ -261,7 +261,7 @@ private:
             dirStream->close();
         }
 
-        //dirStream = TODO create a stream for this path
+        dirStream = std::shared_ptr<MStream>(this->meatStream());
         a = archive_read_new();
         archive_read_support_filter_all(a);
         archive_read_support_format_all(a);
