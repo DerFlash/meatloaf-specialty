@@ -37,15 +37,22 @@ int64_t myskip(struct archive *a, void *__src_stream, int64_t request);
  * Streams implementations
  ********************************************************/
 
+class ArchiveStreamData {
+public:
+    uint8_t *srcBuffer = nullptr;
+    std::shared_ptr<MStream> srcStream = nullptr; // a stream that is able to serve bytes of this archive
+};
+
 class ArchiveStream : public MStream
 {
     struct archive *a;
     bool is_open = false;
-    size_t buffSize = 4096;
-    uint8_t *srcBuffer = nullptr;
     uint32_t _position = 0;
+    ArchiveStreamData streamData;
 
 public:
+    static const size_t buffSize = 4096;
+    
     ArchiveStream(std::shared_ptr<MStream> srcStr);
     ~ArchiveStream();
 
@@ -78,7 +85,7 @@ public:
     virtual bool seek(uint32_t pos) override;
 
 protected:
-    std::shared_ptr<MStream> srcStream = nullptr; // a stream that is able to serve bytes of this archive
+
 
 private:
 };

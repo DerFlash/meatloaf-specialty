@@ -6,28 +6,25 @@
 
 #include "meat_io.h"
 
-// TODO: check how we can use archive_seek_callback, archive_passphrase_callback etc. to our benefit!
-
 /* Returns pointer and size of next block of data from archive. */
 // The read callback returns the number of bytes read, zero for end-of-file, or a negative failure code as above.
 // It also returns a pointer to the block of data read.
-ssize_t myRead(struct archive *a, void *__src_stream, const void **buff)
+// https://github.com/libarchive/libarchive/wiki/LibarchiveIO
+ssize_t myRead(struct archive *a, void *userData, const void **buff)
 {
-    MStream *src_str = (MStream *)__src_stream;
+    ArchiveStreamData *streamData = (ArchiveStreamData *)userData;
 
-    // OK, so:
     // 1. we have to call srcStr.read(...)
+    ssize_t bc = streamData->srcStream->read(streamData->srcBuffer, ArchiveStream::buffSize);
     // 2. set *buff to the bufer read in 1.
+    *buff = streamData->srcBuffer;
     // 3. return read bytes count
-
-    // *buff = srcBuffer;
-    // return src_str->read(srcBuffer, buffSize);
-    return -1;
+    return bc;
 }
 
-int myclose(struct archive *a, void *__src_stream)
+int myclose(struct archive *a, void *userData)
 {
-    MStream *src_str = (MStream *)__src_stream;
+    ArchiveStreamData *src_str = (ArchiveStreamData *)userData;
 
     // do we want to close srcStream here???
     return (ARCHIVE_OK);
@@ -44,9 +41,10 @@ If skipping is not provided or fails, libarchive will call the read() function a
 * If you do skip fewer bytes than requested, libarchive will invoke your
 * read callback and discard data as necessary to make up the full skip.
 */
-int64_t myskip(struct archive *a, void *__src_stream, int64_t request)
+// https://github.com/libarchive/libarchive/wiki/LibarchiveIO
+int64_t myskip(struct archive *a, void *userData, int64_t request)
 {
-    MStream *src_str = (MStream *)__src_stream;
+    MStream *src_str = (MStream *)userData;
     if (src_str->isOpen())
     {
         bool rc = src_str->seek(request, SEEK_CUR);
@@ -64,18 +62,20 @@ int64_t myskip(struct archive *a, void *__src_stream, int64_t request)
 
 ArchiveStream::ArchiveStream(std::shared_ptr<MStream> srcStr)
 {
-    srcStream = srcStr;
+    // it should be possible to to pass a password parameter here and somehow
+    // call archive_passphrase_callback(password) from here, right?
+    streamData.srcStream = srcStr;
     a = archive_read_new();
     archive_read_support_filter_all(a);
     archive_read_support_format_all(a);
-    srcBuffer = new uint8_t[buffSize];
+    streamData.srcBuffer = new uint8_t[buffSize];
 }
 
 ArchiveStream::~ArchiveStream()
 {
     close();
-    if (srcBuffer != nullptr)
-        delete[] srcBuffer;
+    if (streamData.srcBuffer != nullptr)
+        delete[] streamData.srcBuffer;
 }
 
 bool ArchiveStream::open()
@@ -84,7 +84,7 @@ bool ArchiveStream::open()
     {
         // callbacks set here:
         //                                    open, read  , skip,   close
-        int r = archive_read_open2(a, srcStream.get(), NULL, myRead, myskip, myclose);
+        int r = archive_read_open2(a, &streamData, NULL, myRead, myskip, myclose);
         if (r == ARCHIVE_OK)
             is_open = true;
     }
@@ -169,7 +169,7 @@ size_t ArchiveStream::error()
 
 bool ArchiveStream::seek(uint32_t pos)
 {
-    return srcStream->seek(pos);
+    return streamData.srcStream->seek(pos);
 }
 
 /********************************************************
@@ -178,6 +178,7 @@ bool ArchiveStream::seek(uint32_t pos)
 
 MStream *ArchiveContainerFile::createIStream(std::shared_ptr<MStream> containerIstream)
 {
+    // TODO - we can get password from this URL and pass it as a parameter to this constructor
     return new ArchiveStream(containerIstream);
 }
 
